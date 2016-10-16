@@ -5,7 +5,7 @@ Geny 0.1.0
 "com.lihaoyi" %% "geny" % "0.1.0"
 "com.lihaoyi" %%% "geny" % "0.1.0" // Scala.js
 ```
-Provides the `geny.Generator` data type, A Generator of elements of type `A`.
+Provides the `geny.Generator[A]` data type, a Generator of elements of type `A`.
 
 `Generator` is basically the inverse of
 a `scala.Iterator`: instead of the core functionality being the pull-based
