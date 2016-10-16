@@ -150,7 +150,7 @@ res15: Vector[(Char, Int)] = Vector((0,0), (1,1), (3,3), (4,4), (5,5))
 ```
 
 As you can see, you can `flatMap`, `filter`, `map`, `drop`, `takeWhile`, `++`
-and call other methods on the `Generator, and it simply builds up the
+and call other methods on the `Generator`, and it simply builds up the
 computation without running it. Only when a terminal operation like
 `toSeq` or `toVector` is called is it finally evaluated into a result.
 
