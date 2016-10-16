@@ -157,7 +157,7 @@ object Generator{
       }
       last
     }
-    override def toString = s"Gen($t)"
+    override def toString = s"Generator($t)"
   }
   def selfClosing[T](makeIterator: => (Iterator[T], () => Unit)): Generator[T] = new SelfClosing(makeIterator)
 
@@ -186,7 +186,7 @@ object Generator{
       else other.generate(f)
 
     }
-    override def toString = s"$inner.zipWithIndex"
+    override def toString = s"$inner ++ $other"
   }
 
   private class ZipWithIndexed[+T](inner: Generator[T]) extends Generator[(T, Int)] {

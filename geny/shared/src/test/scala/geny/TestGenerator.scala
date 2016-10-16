@@ -1,17 +1,17 @@
 package geny
 import utest._
-object TestGen extends TestSuite{
+object TestGenerator extends TestSuite{
   val tests = this{
     'toStrings{
       def check(g: Generator[Int], expected: String) = {
         assert(g.toString == expected)
       }
-      check(Generator(0, 1, 2), "Gen(WrappedArray(0, 1, 2))")
-      check(Generator.fromIterable(0 until 3), "Gen(Range(0, 1, 2))")
-      check(Generator.fromIterable(0 until 3).filter(_ > 2), "Gen(Range(0, 1, 2)).filter(<function1>)")
-      check(Generator.fromIterable(0 until 3).map(_ + 2), "Gen(Range(0, 1, 2)).map(<function1>)")
-      check(Generator.fromIterable(0 until 3).takeWhile(_ > 2), "Gen(Range(0, 1, 2)).takeWhile(<function1>)")
-      check(Generator.fromIterable(0 until 3).dropWhile(_ < 2), "Gen(Range(0, 1, 2)).dropWhile(<function1>)")
+      check(Generator(0, 1, 2), "Generator(WrappedArray(0, 1, 2))")
+      check(Generator.fromIterable(0 until 3), "Generator(Range(0, 1, 2))")
+      check(Generator.fromIterable(0 until 3).filter(_ > 2), "Generator(Range(0, 1, 2)).filter(<function1>)")
+      check(Generator.fromIterable(0 until 3).map(_ + 2), "Generator(Range(0, 1, 2)).map(<function1>)")
+      check(Generator.fromIterable(0 until 3).takeWhile(_ > 2), "Generator(Range(0, 1, 2)).takeWhile(<function1>)")
+      check(Generator.fromIterable(0 until 3).dropWhile(_ < 2), "Generator(Range(0, 1, 2)).dropWhile(<function1>)")
     }
     'unit{
       def check[T](gen: Generator[T], expected: Seq[T]) = {
@@ -179,7 +179,7 @@ object TestGen extends TestSuite{
       }
       'selfClosing{
         var openSources = 0
-        class CloseableSource{
+        class DummyCloseableSource{
           val iterator = Iterator(1, 2, 3, 4, 5, 6, 7, 8, 9)
           openSources += 1
           var closed = false
@@ -190,7 +190,7 @@ object TestGen extends TestSuite{
         }
 
         val g = Generator.selfClosing{
-          val closeable = new CloseableSource()
+          val closeable = new DummyCloseableSource()
           (closeable.iterator, () => closeable.close())
         }
         // Make sure drop and take do not result in the source
