@@ -96,17 +96,17 @@ trait Gen[+A]{
   }
 
   // Builders
-  def filter(pred: A => Boolean): Gen[A] = new Gen.Filtered(pred, this)
-  def map[B](func: A => B): Gen[B] = new Gen.Mapped[B, A](func, this)
-  def flatMap[B](func: A => Gen[B]): Gen[B] = new Gen.FlatMapped[B, A](func, this)
-  def slice(start: Int, end: Int): Gen[A] = new Gen.Sliced(start, end, this)
+  def filter(pred: A => Boolean): Gen[A] = new Gen.Filtered(this, pred)
+  def map[B](func: A => B): Gen[B] = new Gen.Mapped[B, A](this, func)
+  def flatMap[B](func: A => Gen[B]): Gen[B] = new Gen.FlatMapped[B, A](this, func)
+  def slice(start: Int, end: Int): Gen[A] = new Gen.Sliced(this, start, end)
   def take(n: Int) = slice(0, n)
   def drop(n: Int) = slice(n, Int.MaxValue)
-  def takeWhile(pred: A => Boolean): Gen[A] = new Gen.TakeWhile(pred, this)
-  def dropWhile(pred: A => Boolean): Gen[A] = new Gen.DropWhile(pred, this)
+  def takeWhile(pred: A => Boolean): Gen[A] = new Gen.TakeWhile(this, pred)
+  def dropWhile(pred: A => Boolean): Gen[A] = new Gen.DropWhile(this, pred)
   def zipWithIndex: Gen[(A, Int)] = new Gen.ZipWithIndexed(this)
   def zip[B](other: Iterable[B]): Gen[(A, B)] = new Gen.Zipped(this, other)
-
+  def ++[B >: A](other: Gen[B]): Gen[B] = new Gen.Concat(this, other)
 
   // Conversions
   def head = take(1).toSeq.head
@@ -158,6 +158,16 @@ object Gen{
     override def toString = s"Gen($t)"
   }
 
+  private class Concat[+T](inner: Gen[T], other: Gen[T]) extends Gen[T] {
+    def generate(f: T => Gen.Action) = {
+      val res1 = inner.generate(f)
+      if (res1 == Gen.End) Gen.End
+      else other.generate(f)
+
+    }
+    override def toString = s"$inner.zipWithIndex"
+  }
+
   private class ZipWithIndexed[+T](inner: Gen[T]) extends Gen[(T, Int)] {
     def generate(f: ((T, Int)) => Gen.Action) = {
       var i = 0
@@ -181,21 +191,21 @@ object Gen{
     override def toString = s"$inner.zip($other)"
   }
 
-  private class Filtered[+T](pred: T => Boolean, inner: Gen[T]) extends Gen[T]{
+  private class Filtered[+T](inner: Gen[T], pred: T => Boolean) extends Gen[T]{
     def generate(f: T => Gen.Action) = {
       inner.generate{t => if (pred(t)) f(t) else Gen.Continue}
     }
     override def toString = s"$inner.filter($pred)"
   }
 
-  private class Mapped[+T, V](func: V => T, inner: Gen[V]) extends Gen[T]{
+  private class Mapped[+T, V](inner: Gen[V], func: V => T) extends Gen[T]{
     def generate(f: T => Gen.Action) = {
       inner.generate{t => f(func(t))}
     }
     override def toString = s"$inner.map($func)"
   }
 
-  private class FlatMapped[+T, V](func: V => Gen[T], inner: Gen[V]) extends Gen[T]{
+  private class FlatMapped[+T, V](inner: Gen[V], func: V => Gen[T]) extends Gen[T]{
     def generate(f: T => Gen.Action) = {
 
       inner.generate{ outerT =>
@@ -207,7 +217,7 @@ object Gen{
     override def toString = s"$inner.map($func)"
   }
 
-  private class Sliced[+T](start: Int, end: Int, inner: Gen[T]) extends Gen[T]{
+  private class Sliced[+T](inner: Gen[T], start: Int, end: Int) extends Gen[T]{
     def generate(f: T => Gen.Action) = {
       var count = 0
 
@@ -226,7 +236,7 @@ object Gen{
     override def toString = s"$inner.slice($start, $end)"
   }
 
-  private class TakeWhile[+T](pred: T => Boolean, inner: Gen[T]) extends Gen[T]{
+  private class TakeWhile[+T](inner: Gen[T], pred: T => Boolean) extends Gen[T]{
     def generate(f: T => Gen.Action) = {
       inner.generate{t =>
         if (pred(t)) {
@@ -239,7 +249,7 @@ object Gen{
     override def toString = s"$inner.takeWhile($pred)"
   }
 
-  private class DropWhile[+T](pred: T => Boolean, inner: Gen[T]) extends Gen[T]{
+  private class DropWhile[+T](inner: Gen[T], pred: T => Boolean) extends Gen[T]{
     def generate(f: T => Gen.Action) = {
       var started = false
       inner.generate{t =>

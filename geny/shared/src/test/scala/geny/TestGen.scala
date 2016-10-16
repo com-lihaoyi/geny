@@ -53,7 +53,10 @@ object TestGen extends TestSuite{
       }
 
 
-
+      'concat{
+        check(Gen(0 until 10) ++ Gen(0 until 10), (0 until 10) ++ (0 until 10))
+        check(Gen(0 until 10) ++ Gen(10 until 20), 0 until 20)
+      }
       'filter - check(Gen(0 until 10).filter(_ > 5), 6 until 10)
       'map - {
         check(Gen(0 until 10).map(_ + 1), 1 until 11)
@@ -92,7 +95,10 @@ object TestGen extends TestSuite{
       'slice{
         check(Gen(0 until 10).slice(3, 7), 3 until 7)
         check(Gen(0 until 10).take(3), 0 until 3)
+        check(Gen(0 until 10).take(0), 0 until 0)
+        check(Gen(0 until 10).take(999), 0 until 10)
         check(Gen(0 until 10).drop(3), 3 until 10)
+        check(Gen(0 until 10).drop(-1), 0 until 10)
       }
       'takeWhile- check(Gen(0 until 10).takeWhile(_ < 5), 0 until 5)
       'dropWhile - check(Gen(0 until 10).dropWhile(_ < 5), 5 until 10)
@@ -201,6 +207,12 @@ object TestGen extends TestSuite{
         _.flatMap(i => i.toString.toSeq).takeWhile(_ != '6').zipWithIndex.filter(_._1 != '2'),
         _.flatMap(i => i.toString.toSeq).takeWhile(_ != '6').zipWithIndex.filter(_._1 != '2')
       )
+
+      * - check(
+        x => x.filter(_ % 2 == 0).map(_ * 2).drop(2) ++ x.map(_.toString.toSeq).flatMap(x => x),
+        x => x.filter(_ % 2 == 0).map(_ * 2).drop(2) ++ x.map(_.toString.toSeq).flatMap(x => x)
+      )
+
     }
   }
 }
