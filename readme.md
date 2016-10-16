@@ -26,6 +26,10 @@ API i intentionally modelled after that of `scala.Iterator` and should be
 mostly drop-in, with conversion functions provided where you need to interact
 with APIs using the standard Scala collections.
 
+Geny is intentionally a tiny library with one file and zero dependencies,
+so you can depend on it (or even copy-paste it into your project) without
+fear of taking on unknown heavyweight dependencies.
+
 ## Usage
 
 ### Construction
