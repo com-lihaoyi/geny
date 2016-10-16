@@ -145,7 +145,9 @@ object Gen{
   object Continue extends Action
 
 
-  implicit def apply[M[_], T](t: M[T])(implicit convert: (M[T] => Iterable[T])): Gen[T] = new Gen[T]{
+  def apply[T](xs: T*) = fromIterable(xs)
+
+  implicit def fromIterable[M[_], T](t: M[T])(implicit convert: (M[T] => Iterable[T])): Gen[T] = new Gen[T]{
     def generate(f: T => Gen.Action) = {
       var last: Gen.Action = Gen.Continue
       val iterator = convert(t).iterator
@@ -157,6 +159,25 @@ object Gen{
     }
     override def toString = s"Gen($t)"
   }
+  def selfClosing[T](makeIterator: => (Iterator[T], () => Unit)): Gen[T] = new SelfClosing(makeIterator)
+
+  private class SelfClosing[+T](makeIterator: => (Iterator[T], () => Unit)) extends Gen[T]{
+    def generate(f: T => Gen.Action) = {
+      var last: Gen.Action = Gen.Continue
+      val (iterator, onComplete) = makeIterator
+      try {
+        while (last == Gen.Continue && iterator.hasNext) {
+          last = f(iterator.next())
+        }
+        last
+      } finally{
+        onComplete()
+      }
+    }
+    override def toString = s"Gen.SelfClosing(...)"
+  }
+
+
 
   private class Concat[+T](inner: Gen[T], other: Gen[T]) extends Gen[T] {
     def generate(f: T => Gen.Action) = {
@@ -227,10 +248,16 @@ object Gen{
           Gen.Continue
         }else if (count < end){
           count += 1
-          f(t)
-        }else{
-          Gen.End
-        }
+          if (count != end) f(t)
+          else {
+            // If we've reached the limit of our slice, evaluate `f` once but
+            // then `End` immediately. This saves us having to consume one more
+            // item from `inner`, only to ignore/discard it when we realize
+            // we're done.
+            f(t)
+            Gen.End
+          }
+        } else Gen.End
       }
     }
     override def toString = s"$inner.slice($start, $end)"

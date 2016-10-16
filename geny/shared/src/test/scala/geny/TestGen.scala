@@ -6,62 +6,69 @@ object TestGen extends TestSuite{
       def check(g: Gen[Int], expected: String) = {
         assert(g.toString == expected)
       }
-      check(Gen(0 until 3), "Gen(Range(0, 1, 2))")
-      check(Gen(0 until 3).filter(_ > 2), "Gen(Range(0, 1, 2)).filter(<function1>)")
-      check(Gen(0 until 3).map(_ + 2), "Gen(Range(0, 1, 2)).map(<function1>)")
-      check(Gen(0 until 3).takeWhile(_ > 2), "Gen(Range(0, 1, 2)).takeWhile(<function1>)")
-      check(Gen(0 until 3).dropWhile(_ < 2), "Gen(Range(0, 1, 2)).dropWhile(<function1>)")
+      check(Gen(0, 1, 2), "Gen(WrappedArray(0, 1, 2))")
+      check(Gen.fromIterable(0 until 3), "Gen(Range(0, 1, 2))")
+      check(Gen.fromIterable(0 until 3).filter(_ > 2), "Gen(Range(0, 1, 2)).filter(<function1>)")
+      check(Gen.fromIterable(0 until 3).map(_ + 2), "Gen(Range(0, 1, 2)).map(<function1>)")
+      check(Gen.fromIterable(0 until 3).takeWhile(_ > 2), "Gen(Range(0, 1, 2)).takeWhile(<function1>)")
+      check(Gen.fromIterable(0 until 3).dropWhile(_ < 2), "Gen(Range(0, 1, 2)).dropWhile(<function1>)")
     }
     'unit{
       def check[T](gen: Gen[T], expected: Seq[T]) = {
         val toSeq = gen.toSeq
         assert(toSeq == expected)
       }
-      'toSeq - check(Gen(0 until 10), 0 until 10)
+      'toSeq - check(Gen.fromIterable(0 until 10), 0 until 10)
 
       'find - {
-        assert(Gen(0 until 10).find(_ % 5 == 4) == Some(4))
-        assert(Gen(0 until 10).find(_ % 100 == 40) == None)
+        assert(Gen.fromIterable(0 until 10).find(_ % 5 == 4) == Some(4))
+        assert(Gen.fromIterable(0 until 10).find(_ % 100 == 40) == None)
       }
       'exists{
-        assert(Gen(0 until 10).exists(_ == 4) == true)
-        assert(Gen(0 until 10).exists(_ == 40) == false)
+        assert(Gen.fromIterable(0 until 10).exists(_ == 4) == true)
+        assert(Gen.fromIterable(0 until 10).exists(_ == 40) == false)
       }
       'contains{
-        assert(Gen(0 until 10).contains(4) == true)
-        assert(Gen(0 until 10).contains(40) == false)
+        assert(Gen.fromIterable(0 until 10).contains(4) == true)
+        assert(Gen.fromIterable(0 until 10).contains(40) == false)
       }
       'forAll{
-        assert(Gen(0 until 10).forall(_  < 100) == true)
-        assert(Gen(0 until 10).forall(_ < 5) == false)
+        assert(Gen.fromIterable(0 until 10).forall(_  < 100) == true)
+        assert(Gen.fromIterable(0 until 10).forall(_ < 5) == false)
       }
       'count{
-        assert(Gen(0 until 10).count(_  < 100) == 10)
-        assert(Gen(0 until 10).count(_  > 100) == 0)
-        assert(Gen(0 until 10).count(_ < 5) == 5)
+        assert(Gen.fromIterable(0 until 10).count(_  < 100) == 10)
+        assert(Gen.fromIterable(0 until 10).count(_  > 100) == 0)
+        assert(Gen.fromIterable(0 until 10).count(_ < 5) == 5)
       }
 
       'reduceLeft{
-        assert(Gen(0 until 10).reduceLeft(_ + _) == 45)
+        assert(Gen.fromIterable(0 until 10).reduceLeft(_ + _) == 45)
         intercept[UnsupportedOperationException](
-          Gen(0 until 0).reduceLeft(_ + _)
+          Gen.fromIterable(0 until 0).reduceLeft(_ + _)
         )
       }
       'foldLeft{
-        assert(Gen(0 until 10).foldLeft(0)(_ + _) == 45)
-        assert(Gen(0 until 0).foldLeft(0)(_ + _) == 0)
+        assert(Gen.fromIterable(0 until 10).foldLeft(0)(_ + _) == 45)
+        assert(Gen.fromIterable(0 until 0).foldLeft(0)(_ + _) == 0)
       }
 
 
       'concat{
-        check(Gen(0 until 10) ++ Gen(0 until 10), (0 until 10) ++ (0 until 10))
-        check(Gen(0 until 10) ++ Gen(10 until 20), 0 until 20)
-      }
-      'filter - check(Gen(0 until 10).filter(_ > 5), 6 until 10)
-      'map - {
-        check(Gen(0 until 10).map(_ + 1), 1 until 11)
         check(
-          Gen(0 until 10).map(i => i.toString * i),
+          Gen.fromIterable(0 until 10) ++ Gen.fromIterable(0 until 10),
+          (0 until 10) ++ (0 until 10)
+        )
+        check(
+          Gen.fromIterable(0 until 10) ++ Gen.fromIterable(10 until 20),
+          0 until 20
+        )
+      }
+      'filter - check(Gen.fromIterable(0 until 10).filter(_ > 5), 6 until 10)
+      'map - {
+        check(Gen.fromIterable(0 until 10).map(_ + 1), 1 until 11)
+        check(
+          Gen.fromIterable(0 until 10).map(i => i.toString * i),
           Seq(
             "",
             "1",
@@ -89,21 +96,24 @@ object TestGen extends TestSuite{
           1, 2, 8,
           1, 2, 9
         )
-        check(Gen(0 until 10).flatMap(x => Seq(1, 2, x)), expected)
-        check(Gen(0 until 10).flatMap(x => Gen(Seq(1, 2, x))), expected)
+        check(Gen.fromIterable(0 until 10).flatMap(x => Seq(1, 2, x)), expected)
+        check(
+          Gen.fromIterable(0 until 10).flatMap(x => Gen.fromIterable(Seq(1, 2, x))),
+          expected
+        )
       }
       'slice{
-        check(Gen(0 until 10).slice(3, 7), 3 until 7)
-        check(Gen(0 until 10).take(3), 0 until 3)
-        check(Gen(0 until 10).take(0), 0 until 0)
-        check(Gen(0 until 10).take(999), 0 until 10)
-        check(Gen(0 until 10).drop(3), 3 until 10)
-        check(Gen(0 until 10).drop(-1), 0 until 10)
+        check(Gen.fromIterable(0 until 10).slice(3, 7), 3 until 7)
+        check(Gen.fromIterable(0 until 10).take(3), 0 until 3)
+        check(Gen.fromIterable(0 until 10).take(0), 0 until 0)
+        check(Gen.fromIterable(0 until 10).take(999), 0 until 10)
+        check(Gen.fromIterable(0 until 10).drop(3), 3 until 10)
+        check(Gen.fromIterable(0 until 10).drop(-1), 0 until 10)
       }
-      'takeWhile- check(Gen(0 until 10).takeWhile(_ < 5), 0 until 5)
-      'dropWhile - check(Gen(0 until 10).dropWhile(_ < 5), 5 until 10)
+      'takeWhile- check(Gen.fromIterable(0 until 10).takeWhile(_ < 5), 0 until 5)
+      'dropWhile - check(Gen.fromIterable(0 until 10).dropWhile(_ < 5), 5 until 10)
       'zipWithIndex - check(
-        Gen(5 until 10).zipWithIndex,
+        Gen.fromIterable(5 until 10).zipWithIndex,
         Seq(
           5 -> 0,
           6 -> 1,
@@ -114,7 +124,7 @@ object TestGen extends TestSuite{
       )
       'zip{
         'simple - check(
-          Gen(0 until 5).zip(Seq('a', 'b', 'c', 'd', 'e')),
+          Gen.fromIterable(0 until 5).zip(Seq('a', 'b', 'c', 'd', 'e')),
           Seq(
             0 -> 'a',
             1 -> 'b',
@@ -124,7 +134,7 @@ object TestGen extends TestSuite{
           )
         )
         'truncateIfGenLonger - check(
-          Gen(0 until 99).zip(Seq('a', 'b', 'c', 'd', 'e')),
+          Gen.fromIterable(0 until 99).zip(Seq('a', 'b', 'c', 'd', 'e')),
           Seq(
             0 -> 'a',
             1 -> 'b',
@@ -134,7 +144,7 @@ object TestGen extends TestSuite{
           )
         )
         'truncateIfIterableLonger - check(
-          Gen(0 until 5).zip(Seq('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')),
+          Gen.fromIterable(0 until 5).zip(Seq('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i')),
           Seq(
             0 -> 'a',
             1 -> 'b',
@@ -146,34 +156,77 @@ object TestGen extends TestSuite{
       }
       'head{
         assert(
-          Gen(0 until 10).head == 0,
-          Gen(5 until 10).head == 5
+          Gen.fromIterable(0 until 10).head == 0,
+          Gen.fromIterable(5 until 10).head == 5
         )
       }
       'conversions{
         assert(
-          Gen(0 until 10).toSeq == (0 until 10),
-          Gen(0 until 10).toVector == (0 until 10),
-          Gen(0 until 10).toArray.toSeq == (0 until 10),
-          Gen(0 until 10).toVector == (0 until 10),
-          Gen(0 until 10).toList == (0 until 10),
-          Gen(0 until 10).toSet == (0 until 10).toSet
+          Gen.fromIterable(0 until 10).toSeq == (0 until 10),
+          Gen.fromIterable(0 until 10).toVector == (0 until 10),
+          Gen.fromIterable(0 until 10).toArray.toSeq == (0 until 10),
+          Gen.fromIterable(0 until 10).toVector == (0 until 10),
+          Gen.fromIterable(0 until 10).toList == (0 until 10),
+          Gen.fromIterable(0 until 10).toSet == (0 until 10).toSet
         )
       }
       'mkString{
         assert(
-          Gen(0 until 10).mkString == "0123456789",
-          Gen(0 until 10).mkString(" ") == "0 1 2 3 4 5 6 7 8 9",
-          Gen(0 until 10).mkString("[", ", ", "]") == "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
+          Gen.fromIterable(0 until 10).mkString == "0123456789",
+          Gen.fromIterable(0 until 10).mkString(" ") == "0 1 2 3 4 5 6 7 8 9",
+          Gen.fromIterable(0 until 10).mkString("[", ", ", "]") == "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
         )
       }
+      'selfClosing{
+        var openSources = 0
+        class CloseableSource{
+          val iterator = Iterator(1, 2, 3, 4, 5, 6, 7, 8, 9)
+          openSources += 1
+          var closed = false
+          def close() = {
+            closed = true
+            openSources -= 1
+          }
+        }
 
+        val g = Gen.selfClosing{
+          val closeable = new CloseableSource()
+          (closeable.iterator, () => closeable.close())
+        }
+        // Make sure drop and take do not result in the source
+        // not getting closed
+        for(i <- 0 until 100) g.drop(1).take(2).toSeq
 
+        // Even if the foreach fails in the middle with an exception,
+        // the source must get closed
+        intercept[Exception]{
+          g.foreach{ z =>
+            if (z == 5) throw new Exception()
+          }
+        }
+
+        assert(openSources == 0)
+      }
+    }
+    'laziness{
+      var count = 0
+      val taken = Gen.fromIterable(0 until 10).map{x => count += 1; x + 1}.take(3)
+      // Before evaluation, nothing has happened!
+      assert(count == 0)
+      val seqed = taken.toSeq
+      // After evaluation, the number of items evaluated is limited by the take call.
+      assert(count == 3)
+      assert(seqed == Seq(1, 2, 3))
+
+      // After multiple evaluations, the count keeps going up since it's not memoized
+      val seqed2 = taken.toSeq
+      assert(count == 6)
+      assert(seqed2 == Seq(1, 2, 3))
     }
     'combinations{
       def check[V](mkGen: Gen[Int] => Gen[V], mkSeq: Seq[Int] => Seq[V]) = {
         val seq = 0 until 10
-        val gen = Gen(seq)
+        val gen = Gen.fromIterable(seq)
         val seq1 = mkGen(gen).toSeq
         val seq2 = mkSeq(seq)
         assert(seq1 == seq2)
