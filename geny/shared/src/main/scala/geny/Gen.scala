@@ -4,7 +4,7 @@ import scala.collection.mutable
 import scala.reflect.ClassTag
 
 /**
-  * A Generator of elements of type [[A]].
+  * Provides the `geny.Gen` data type, A Generator of elements of type [[A]].
   *
   * [[Gen]] is basically the inverse of
   * a `scala.Iterator`: instead of the core functionality being the pull-based
