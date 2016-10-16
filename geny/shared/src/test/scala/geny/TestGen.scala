@@ -19,6 +19,41 @@ object TestGen extends TestSuite{
       }
       'toSeq - check(Gen(0 until 10), 0 until 10)
 
+      'find - {
+        assert(Gen(0 until 10).find(_ % 5 == 4) == Some(4))
+        assert(Gen(0 until 10).find(_ % 100 == 40) == None)
+      }
+      'exists{
+        assert(Gen(0 until 10).exists(_ == 4) == true)
+        assert(Gen(0 until 10).exists(_ == 40) == false)
+      }
+      'contains{
+        assert(Gen(0 until 10).contains(4) == true)
+        assert(Gen(0 until 10).contains(40) == false)
+      }
+      'forAll{
+        assert(Gen(0 until 10).forall(_  < 100) == true)
+        assert(Gen(0 until 10).forall(_ < 5) == false)
+      }
+      'count{
+        assert(Gen(0 until 10).count(_  < 100) == 10)
+        assert(Gen(0 until 10).count(_  > 100) == 0)
+        assert(Gen(0 until 10).count(_ < 5) == 5)
+      }
+
+      'reduceLeft{
+        assert(Gen(0 until 10).reduceLeft(_ + _) == 45)
+        intercept[UnsupportedOperationException](
+          Gen(0 until 0).reduceLeft(_ + _)
+        )
+      }
+      'foldLeft{
+        assert(Gen(0 until 10).foldLeft(0)(_ + _) == 45)
+        assert(Gen(0 until 0).foldLeft(0)(_ + _) == 0)
+      }
+
+
+
       'filter - check(Gen(0 until 10).filter(_ > 5), 6 until 10)
       'map - {
         check(Gen(0 until 10).map(_ + 1), 1 until 11)

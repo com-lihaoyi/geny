@@ -61,8 +61,9 @@ trait Gen[+A]{
     }
     result
   }
-  def exists(f: A => Boolean) = find(!f(_)).isDefined
-  def forall(f: A => Boolean) = !exists(f)
+  def exists(f: A => Boolean) = find(f(_)).isDefined
+  def contains(a: Any) = exists(_ == a)
+  def forall(f: A => Boolean) = !exists(!f(_))
   def count(f: A => Boolean) = {
     var result = 0
     generate{ t =>
@@ -78,6 +79,20 @@ trait Gen[+A]{
       Gen.Continue
     }
     result
+  }
+
+  def reduceLeft[B >: A](f: (B, A) => B): B = {
+    var result: Option[B] = None
+    generate{ t =>
+      result = result match{
+        case None => Some(t)
+        case Some(old) => Some(f(old, t))
+      }
+      Gen.Continue
+    }
+    result.getOrElse(
+      throw new UnsupportedOperationException("empty.reduceLeft")
+    )
   }
 
   // Builders
