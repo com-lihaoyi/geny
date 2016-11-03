@@ -7,11 +7,7 @@ object TestGenerator extends TestSuite{
         assert(g.toString == expected)
       }
       check(Generator(0, 1, 2), "Generator(WrappedArray(0, 1, 2))")
-      check(Generator.fromIterable(0 until 3), "Generator(Range(0, 1, 2))")
-      check(Generator.fromIterable(0 until 3).filter(_ > 2), "Generator(Range(0, 1, 2)).filter(<function1>)")
-      check(Generator.fromIterable(0 until 3).map(_ + 2), "Generator(Range(0, 1, 2)).map(<function1>)")
-      check(Generator.fromIterable(0 until 3).takeWhile(_ > 2), "Generator(Range(0, 1, 2)).takeWhile(<function1>)")
-      check(Generator.fromIterable(0 until 3).dropWhile(_ < 2), "Generator(Range(0, 1, 2)).dropWhile(<function1>)")
+      check(Generator.fromIterable(0 until 3 toList), "Generator(List(0, 1, 2))")
     }
     'unit{
       def check[T](gen: Generator[T], expected: Seq[T]) = {

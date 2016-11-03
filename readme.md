@@ -1,9 +1,9 @@
-Geny 0.1.0
+Geny 0.1.1
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.1.0"
-"com.lihaoyi" %%% "geny" % "0.1.0" // Scala.js
+"com.lihaoyi" %% "geny" % "0.1.1"
+"com.lihaoyi" %%% "geny" % "0.1.1" // Scala.js
 ```
 Provides the `geny.Generator[A]` data type, a Generator of elements of type `A`.
 
@@ -210,6 +210,11 @@ operations performed, and properly closed when everything is done.
 
 Changelog
 =========
+
+0.1.1
+-----
+
+- Publish for Scala 2.12.0
 
 0.1.0
 -----

@@ -1,14 +1,14 @@
-crossScalaVersions := Seq("2.10.5", "2.11.8")
+crossScalaVersions := Seq("2.10.5", "2.11.8", "2.12.0")
 
 lazy val geny = crossProject
   .settings(
     scalaVersion := "2.11.8",
     organization := "com.lihaoyi",
     name := "geny",
-    version := "0.1.0",
+    version := "0.1.1",
     scalacOptions += "-target:jvm-1.7",
     libraryDependencies ++= Seq(
-      "com.lihaoyi" %%% "utest" % "0.4.3" % "test"
+      "com.lihaoyi" %%% "utest" % "0.4.4" % "test"
     ),
     testFrameworks := Seq(new TestFramework("utest.runner.Framework")),
     publishTo := Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2"),
