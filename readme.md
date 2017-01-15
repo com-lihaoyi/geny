@@ -197,7 +197,7 @@ Using `geny.Generator`s, the helper function can instead return a
 `Generator.selfClosing`:
 
 ```scala
-def getFileLines(path: String): geny.Generator[String] = {
+def getFileLines(path: String): geny.Generator[String] = Generator.selfClosing{
   val s = scala.io.Source.fromFile(path)(charSet)
   (s.getLines(), () => s.close())
 }
