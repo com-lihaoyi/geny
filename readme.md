@@ -34,7 +34,7 @@ fear of taking on unknown heavyweight dependencies.
 
 ### Construction
 The two simplest ways to construct a `Generator` are via the `Generator(...)`
-and `Generator.fromIterable` constructors:
+and `Generator.from` constructors:
 
 ```scala
 import geny.Generator
@@ -42,7 +42,7 @@ import geny.Generator
 scala> Generator(0, 1, 2)
 res1: geny.Generator[Int] = Generator(WrappedArray(0, 1, 2))
 
-scala> Generator.fromIterable(Seq(1, 2, 3))
+scala> Generator.from(Seq(1, 2, 3)) // pass in any iterable or iterator
 res2: geny.Generator[Int] = Generator(List(1, 2, 3))
 ```
 
@@ -210,6 +210,12 @@ operations performed, and properly closed when everything is done.
 
 Changelog
 =========
+
+0.1.2
+-----
+
+- Add `.reduce`, `.fold`, `.sum`, `.product`, `.min`, `.max`, `.minBy`, `.maxBy`
+- Rename `.fromIterable` to `.from`, make it also take `Iterator`s
 
 0.1.1
 -----

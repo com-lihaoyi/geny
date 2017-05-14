@@ -72,6 +72,7 @@ trait Generator[+A]{
     }
     result
   }
+  def fold[B](start: B)(f: (B, A) => B): B = foldLeft(start)(f)
   def foldLeft[B](start: B)(f: (B, A) => B): B = {
     var result = start
     generate{ t =>
@@ -81,6 +82,8 @@ trait Generator[+A]{
     result
   }
 
+
+  def reduce[B >: A](f: (B, A) => B): B = reduceLeft(f)
   def reduceLeft[B >: A](f: (B, A) => B): B = {
     var result: Option[B] = None
     generate{ t =>
@@ -99,6 +102,8 @@ trait Generator[+A]{
   def filter(pred: A => Boolean): Generator[A] = new Generator.Filtered(this, pred)
   def map[B](func: A => B): Generator[B] = new Generator.Mapped[B, A](this, func)
   def flatMap[B](func: A => Generator[B]): Generator[B] = new Generator.FlatMapped[B, A](this, func)
+
+  def flatten[V](implicit f: A => Generator[V]) = this.flatMap[V]((x: A) => f(x))
   def slice(start: Int, end: Int): Generator[A] = new Generator.Sliced(this, start, end)
   def take(n: Int) = slice(0, n)
   def drop(n: Int) = slice(n, Int.MaxValue)
@@ -137,6 +142,51 @@ trait Generator[+A]{
   }
   def mkString(sep: String): String = mkString("", sep, "")
   def mkString: String = mkString("")
+
+
+  def sum[B >: A](implicit num: Numeric[B]): B = foldLeft(num.zero)(num.plus)
+
+  def product[B >: A](implicit num: Numeric[B]): B = foldLeft(num.one)(num.times)
+
+  def min[B >: A](implicit cmp: Ordering[B]): A = {
+    reduceLeft((x, y) => if (cmp.lteq(x, y)) x else y)
+  }
+
+  def max[B >: A](implicit cmp: Ordering[B]): A = {
+    reduceLeft((x, y) => if (cmp.gteq(x, y)) x else y)
+  }
+
+  def maxBy[B](f: A => B)(implicit cmp: Ordering[B]): A = {
+    var maxF: B = null.asInstanceOf[B]
+    var maxElem: A = null.asInstanceOf[A]
+    var first = true
+
+    for (elem <- this) {
+      val fx = f(elem)
+      if (first || cmp.gt(fx, maxF)) {
+        maxElem = elem
+        maxF = fx
+        first = false
+      }
+    }
+    maxElem
+  }
+  def minBy[B](f: A => B)(implicit cmp: Ordering[B]): A = {
+    var minF: B = null.asInstanceOf[B]
+    var minElem: A = null.asInstanceOf[A]
+    var first = true
+
+    for (elem <- this) {
+      val fx = f(elem)
+      if (first || cmp.lt(fx, minF)) {
+        minElem = elem
+        minF = fx
+        first = false
+      }
+    }
+    minElem
+  }
+
 }
 
 object Generator{
@@ -145,12 +195,12 @@ object Generator{
   object Continue extends Action
 
 
-  def apply[T](xs: T*) = fromIterable(xs)
+  def apply[T](xs: T*) = from(xs)
 
-  implicit def fromIterable[M[_], T](t: M[T])(implicit convert: (M[T] => Iterable[T])): Generator[T] = new Generator[T]{
+  implicit def from[M[_], T](t: M[T])(implicit convert: (M[T] => TraversableOnce[T])): Generator[T] = new Generator[T]{
     def generate(f: T => Generator.Action) = {
       var last: Generator.Action = Generator.Continue
-      val iterator = convert(t).iterator
+      val iterator = convert(t).toIterator
 
       while (last == Generator.Continue && iterator.hasNext) {
         last = f(iterator.next())
@@ -159,6 +209,8 @@ object Generator{
     }
     override def toString = s"Generator($t)"
   }
+
+
   def selfClosing[T](makeIterator: => (Iterator[T], () => Unit)): Generator[T] = new SelfClosing(makeIterator)
 
   private class SelfClosing[+T](makeIterator: => (Iterator[T], () => Unit)) extends Generator[T]{
