@@ -5,7 +5,7 @@ lazy val geny = crossProject
     scalaVersion := "2.11.8",
     organization := "com.lihaoyi",
     name := "geny",
-    version := "0.1.2",
+    version := "0.1.3",
     scalacOptions += "-target:jvm-1.7",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "utest" % "0.4.4" % "test"

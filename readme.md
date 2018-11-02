@@ -1,9 +1,9 @@
-Geny 0.1.1
+Geny 0.1.3
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.1.1"
-"com.lihaoyi" %%% "geny" % "0.1.1" // Scala.js
+"com.lihaoyi" %% "geny" % "0.1.3"
+"com.lihaoyi" %%% "geny" % "0.1.3" // Scala.js
 ```
 Provides the `geny.Generator[A]` data type, a Generator of elements of type `A`.
 
@@ -210,6 +210,11 @@ operations performed, and properly closed when everything is done.
 
 Changelog
 =========
+0.1.3
+-----
+
+- Allow calling `.count()` without a predicate to count the total number of items
+  in the generator
 
 0.1.2
 -----
