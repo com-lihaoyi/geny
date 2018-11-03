@@ -36,6 +36,7 @@ object TestGenerator extends TestSuite{
         assert(Generator.from(0 until 10).count(_  < 100) == 10)
         assert(Generator.from(0 until 10).count(_  > 100) == 0)
         assert(Generator.from(0 until 10).count(_ < 5) == 5)
+        assert(Generator.from(0 until 10).count() == 10)
       }
 
       'reduceLeft{
@@ -98,6 +99,16 @@ object TestGenerator extends TestSuite{
           expected
         )
       }
+      'collect{
+        check(
+          Generator.from(0 until 10).collect{case k if k % 2 == 0 => k * k},
+          Seq(0, 4, 16, 36, 64)
+        )
+      }
+      'collectFirst{
+        Generator.from(0 until 10).collectFirst{case k if k > 5 => k * k} ==> Some(36)
+        Generator.from(0 until 10).collectFirst{case k if k > 15 => k * k} ==> None
+      }
       'slice{
         check(Generator.from(0 until 10).slice(3, 7), 3 until 7)
         check(Generator.from(0 until 10).take(3), 0 until 3)
@@ -154,6 +165,13 @@ object TestGenerator extends TestSuite{
         assert(
           Generator.from(0 until 10).head == 0,
           Generator.from(5 until 10).head == 5
+        )
+      }
+      'headOption{
+        assert(
+          Generator.from(0 until 10).headOption == Some(0),
+          Generator.from(5 until 10).headOption == Some(5),
+          Generator.from(0 until 0).headOption == None
         )
       }
       'conversions{

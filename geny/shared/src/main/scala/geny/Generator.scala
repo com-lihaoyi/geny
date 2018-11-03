@@ -103,6 +103,10 @@ trait Generator[+A]{
   def filter(pred: A => Boolean): Generator[A] = new Generator.Filtered(this, pred)
   def map[B](func: A => B): Generator[B] = new Generator.Mapped[B, A](this, func)
   def flatMap[B](func: A => Generator[B]): Generator[B] = new Generator.FlatMapped[B, A](this, func)
+  def collect[B](func: PartialFunction[A, B]): Generator[B] =
+    filter(func.isDefinedAt).map(func)
+  def collectFirst[B](func: PartialFunction[A, B]): Option[B] =
+    filter(func.isDefinedAt).map(func).headOption
 
   def flatten[V](implicit f: A => Generator[V]) = this.flatMap[V]((x: A) => f(x))
   def slice(start: Int, end: Int): Generator[A] = new Generator.Sliced(this, start, end)
@@ -116,6 +120,7 @@ trait Generator[+A]{
 
   // Conversions
   def head = take(1).toSeq.head
+  def headOption = take(1).toSeq.headOption
   def toBuffer[B >: A]: mutable.Buffer[B] = {
     val arr = mutable.Buffer.empty[B]
     foreach{arr.append(_)}

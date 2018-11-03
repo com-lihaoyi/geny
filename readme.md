@@ -1,9 +1,9 @@
-Geny 0.1.3
+Geny 0.1.4
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.1.3"
-"com.lihaoyi" %%% "geny" % "0.1.3" // Scala.js
+"com.lihaoyi" %% "geny" % "0.1.4"
+"com.lihaoyi" %%% "geny" % "0.1.4" // Scala.js
 ```
 Provides the `geny.Generator[A]` data type, a Generator of elements of type `A`.
 
@@ -210,6 +210,11 @@ operations performed, and properly closed when everything is done.
 
 Changelog
 =========
+0.1.4
+-----
+
+- Add `.collect`, `.collectFirst`, `.headOption`  methods
+
 0.1.3
 -----
 
