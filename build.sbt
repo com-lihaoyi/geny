@@ -1,11 +1,10 @@
-crossScalaVersions := Seq("2.10.5", "2.11.8", "2.12.0")
-
 lazy val geny = crossProject
   .settings(
-    scalaVersion := "2.11.8",
+    scalaVersion := "2.11.12",
+    crossScalaVersions := Seq("2.11.12", "2.12.7"),
     organization := "com.lihaoyi",
     name := "geny",
-    version := "0.1.4",
+    version := "0.1.5",
     scalacOptions += "-target:jvm-1.7",
     libraryDependencies ++= Seq(
       "com.lihaoyi" %%% "utest" % "0.4.4" % "test"
@@ -32,9 +31,6 @@ lazy val geny = crossProject
             <url>https://github.com/lihaoyi</url>
           </developer>
         </developers>
-  )
-  .jsSettings(
-    scalaJSUseRhino in Global := false
   )
 
 lazy val genyJVM = geny.jvm

@@ -61,7 +61,10 @@ object TestGenerator extends TestSuite{
           0 until 20
         )
       }
-      'filter - check(Generator.from(0 until 10).filter(_ > 5), 6 until 10)
+      'filter - {
+        check(Generator.from(0 until 10).filter(_ > 5), 6 until 10)
+        check(Generator.from(0 until 10).withFilter(_ > 5), 6 until 10)
+      }
       'map - {
         check(Generator.from(0 until 10).map(_ + 1), 1 until 11)
         check(

@@ -101,6 +101,7 @@ trait Generator[+A]{
 
   // Builders
   def filter(pred: A => Boolean): Generator[A] = new Generator.Filtered(this, pred)
+  def withFilter(pred: A => Boolean): Generator[A] = new Generator.Filtered(this, pred)
   def map[B](func: A => B): Generator[B] = new Generator.Mapped[B, A](this, func)
   def flatMap[B](func: A => Generator[B]): Generator[B] = new Generator.FlatMapped[B, A](this, func)
   def collect[B](func: PartialFunction[A, B]): Generator[B] =
