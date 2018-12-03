@@ -1,13 +1,18 @@
 package geny
 import utest._
 object TestGenerator extends TestSuite{
+  val innerCollection = ((BuildInfo.crossVersion, (BuildInfo.scalaVersion.split('.').take(2))) match {
+    case (_, Array("2", "11" | "12")) => "WrappedArray"
+    case (cross, _) if cross.contains("sjs") => "WrappedVarArgs"
+    case _ => "ArraySeq"
+  })
   val tests = this{
     'toStrings{
       def check(g: Generator[Int], expected: String) = {
         assert(g.toString == expected)
       }
-      check(Generator(0, 1, 2), "Generator(WrappedArray(0, 1, 2))")
-      check(Generator.from(0 until 3 toList), "Generator(List(0, 1, 2))")
+      check(Generator(0, 1, 2), s"Generator($innerCollection(0, 1, 2))")
+      check(Generator.from((0 until 3).toList), "Generator(List(0, 1, 2))")
     }
     'unit{
       def check[T](gen: Generator[T], expected: Seq[T]) = {
