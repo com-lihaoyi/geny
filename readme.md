@@ -211,6 +211,11 @@ operations performed, and properly closed when everything is done.
 Changelog
 =========
 
+0.1.6
+-----
+
+- Add scala-native support
+
 0.1.5
 -----
 

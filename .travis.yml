@@ -1,7 +1,19 @@
 language: scala
+sudo: required
+dist: trusty
+addons:
+  apt:
+    update: true
+
+jdk:
+  - oraclejdk8
+
 script:
-- sbt ++$TRAVIS_SCALA_VERSION genyJVM/test genyJS/test
-scala:
-  - 2.10.4
-  - 2.11.8
-sudo: false
+  - curl -L -o ~/bin/mill https://github.com/lihaoyi/mill/releases/download/0.3.5/0.3.5 && chmod +x ~/bin/mill
+  - curl https://raw.githubusercontent.com/scala-native/scala-native/master/scripts/travis_setup.sh | bash -x
+  - export PATH=~/bin/mill:$PATH
+  - mill geny.__.test
+
+cache:
+  directories:
+    - $HOME/.coursier
