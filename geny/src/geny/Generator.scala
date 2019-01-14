@@ -129,7 +129,7 @@ trait Generator[+A]{
 
   }
   def toArray[B >: A : ClassTag]: Array[B] = toBuffer.toArray
-  def toSeq: Seq[A] = toBuffer
+  def toSeq: Seq[A] = toVector
   def toList = toBuffer.toList
   def toSet[B >: A] = toBuffer[B].toSet
   def toVector = toBuffer.toVector

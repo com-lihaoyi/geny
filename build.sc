@@ -33,14 +33,14 @@ trait CommonTestModule extends ScalaModule with TestModule {
 
 
 object geny extends Module {
-  object jvm extends Cross[JvmGenyModule]("2.11.12", "2.12.8")
+  object jvm extends Cross[JvmGenyModule]("2.11.12", "2.12.8", "2.13.0-M5")
   class JvmGenyModule(val crossScalaVersion: String)
     extends Common with ScalaModule with GenyPublishModule
   {
     object test extends Tests with CommonTestModule
   }
 
-  object js extends Cross[JSGenyModule](("2.12.8", "0.6.26"))
+  object js extends Cross[JSGenyModule](("2.12.8", "0.6.26"), ("2.13.0-M5", "0.6.26"))
   class JSGenyModule(val crossScalaVersion: String, crossJSVersion: String)
     extends Common with ScalaJSModule with GenyPublishModule
   {
