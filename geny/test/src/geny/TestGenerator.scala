@@ -6,7 +6,13 @@ object TestGenerator extends TestSuite{
       def check(g: Generator[Int], expected: String) = {
         assert(g.toString == expected)
       }
-      check(Generator(0, 1, 2), "Generator(WrappedArray(0, 1, 2))")
+      // These vary on jvm and js between 2.12 and 2.13
+      val x = Generator(0, 1, 2).toString
+      assert(
+        x == "Generator(WrappedArray(0, 1, 2))" ||
+        x == "Generator(WrappedVarArgs(0, 1, 2))" ||
+        x == "Generator(ArraySeq(0, 1, 2))"
+      )
       check(Generator.from(0 until 3 toList), "Generator(List(0, 1, 2))")
     }
     'unit{
