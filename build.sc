@@ -4,7 +4,7 @@ import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 trait GenyPublishModule extends PublishModule {
   def artifactName = "geny"
 
-  def publishVersion = "0.1.6"
+  def publishVersion = "0.1.8"
 
   def pomSettings = PomSettings(
     description = artifactName(),
@@ -27,20 +27,20 @@ trait Common extends CrossScalaModule {
 }
 
 trait CommonTestModule extends ScalaModule with TestModule {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.6.6")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.6.9")
   def testFrameworks = Seq("utest.runner.Framework")
 }
 
 
 object geny extends Module {
-  object jvm extends Cross[JvmGenyModule]("2.11.12", "2.12.8", "2.13.0-M5")
+  object jvm extends Cross[JvmGenyModule]("2.12.8", "2.13.0")
   class JvmGenyModule(val crossScalaVersion: String)
     extends Common with ScalaModule with GenyPublishModule
   {
     object test extends Tests with CommonTestModule
   }
 
-  object js extends Cross[JSGenyModule](("2.12.8", "0.6.26"), ("2.13.0-M5", "0.6.26"))
+  object js extends Cross[JSGenyModule](("2.12.8", "0.6.26"), ("2.13.0", "0.6.28"))
   class JSGenyModule(val crossScalaVersion: String, crossJSVersion: String)
     extends Common with ScalaJSModule with GenyPublishModule
   {

@@ -1,9 +1,9 @@
-Geny 0.1.6
+Geny 0.1.8
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.1.6"
-"com.lihaoyi" %%% "geny" % "0.1.6" // Scala.js / native
+"com.lihaoyi" %% "geny" % "0.1.8"
+"com.lihaoyi" %%% "geny" % "0.1.8" // Scala.js / native
 ```
 Provides the `geny.Generator[A]` data type, a Generator of elements of type `A`.
 
@@ -210,6 +210,11 @@ operations performed, and properly closed when everything is done.
 
 Changelog
 =========
+
+0.1.8
+-----
+
+- Support for Scala 2.13.0 final
 
 0.1.6
 -----

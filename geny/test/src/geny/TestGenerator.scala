@@ -13,7 +13,7 @@ object TestGenerator extends TestSuite{
         x == "Generator(WrappedVarArgs(0, 1, 2))" ||
         x == "Generator(ArraySeq(0, 1, 2))"
       )
-      check(Generator.from(0 until 3 toList), "Generator(List(0, 1, 2))")
+      check(Generator.from(Range(0, 3).toList), "Generator(List(0, 1, 2))")
     }
     'unit{
       def check[T](gen: Generator[T], expected: Seq[T]) = {
