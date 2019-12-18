@@ -1,7 +1,7 @@
 package geny
 import utest._
 object TestGenerator extends TestSuite{
-  val tests = this{
+  val tests = Tests{
     test("toStrings"){
       def check(g: Generator[Int], expected: String) = {
         assert(g.toString == expected)

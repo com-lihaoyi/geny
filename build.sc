@@ -4,7 +4,7 @@ import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 trait GenyPublishModule extends PublishModule {
   def artifactName = "geny"
 
-  def publishVersion = "0.1.8"
+  def publishVersion = "0.2.0"
 
   def pomSettings = PomSettings(
     description = artifactName(),

@@ -1,16 +1,23 @@
-Geny 0.1.8
+Geny 0.2.0
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.1.8"
-"com.lihaoyi" %%% "geny" % "0.1.8" // Scala.js / native
+"com.lihaoyi" %% "geny" % "0.2.0"
+"com.lihaoyi" %%% "geny" % "0.2.0" // Scala.js / native
 ```
-Provides the `geny.Generator[A]` data type, a Generator of elements of type `A`.
 
-`Generator` is basically the inverse of
-a `scala.Iterator`: instead of the core functionality being the pull-based
-`hasNext` and `next: T` methods, the core is based around the push-based
-`generate` method, which is similar to `foreach` with some tweaks.
+Geny is a small library that provides push-based versions of common standard
+library interfaces:
+
+- `geny.Generator[T]`, a push-based version of `scala.Iterator[T]`
+- `geny.Writable`, a push-based version of `java.io.InputStream`
+
+## Generator
+
+`Generator` is basically the inverse of a `scala.Iterator`: instead of the core
+functionality being the pull-based `hasNext` and `next: T` methods, the core is
+based around the push-based `generate` method, which is similar to `foreach`
+with some tweaks.
 
 Unlike a `scala.Iterator`, subclasses of `Generator` can guarantee any clean
 up logic is performed by placing it after the `generate` call is made. This is
@@ -29,8 +36,6 @@ with APIs using the standard Scala collections.
 Geny is intentionally a tiny library with one file and zero dependencies,
 so you can depend on it (or even copy-paste it into your project) without
 fear of taking on unknown heavyweight dependencies.
-
-## Usage
 
 ### Construction
 The two simplest ways to construct a `Generator` are via the `Generator(...)`
@@ -208,8 +213,63 @@ The caller can then use normal collection operations on the returned
 always be properly opened when a terminal operation is called, the required
 operations performed, and properly closed when everything is done.
 
+## Writable
+
+Writable is a minimal interface that can be implemented by any data type that
+writes binary output to a `java.io.OutputStream`:
+
+```scala
+trait Writable{
+  def writeBytesTo(out: OutputStream): Unit
+}
+```
+
+Apart from the built-in implicit constructors that create `Writable`s from
+`String`/`Array[Byte]`/`java.io.InputStream`, `Writable` is also implemented by
+[uPickle](https://github.com/lihaoyi/upickle),
+[Scalatags](https://github.com/lihaoyi/scalatags), and used by
+[Requests-Scala](https://github.com/lihaoyi/requests-scala),
+[OS-Lib](https://github.com/lihaoyi/os-lib) and the
+[Cask web framework](https://github.com/lihaoyi/cask).
+
+`Writable` allows for zero-friction zero-overhead streaming data exchange
+between these libraries, e.g. allowing you pass Scalatags `Frag`s directly
+`os.write`:
+
+```scala
+@ import $ivy.`com.lihaoyi::scalatags:0.8.0`, scalatags.Text.all._
+import $ivy.$                             , scalatags.Text.all._
+
+@ os.write(os.pwd / "hello.html", html(body(h1("Hello"), p("World!"))))
+
+@ os.read(os.pwd / "hello.html")
+res8: String = "<html><body><h1>Hello</h1><p>World!</p></body></html>"
+```
+
+Or sending `ujson.Value`s directly to `requests.post`
+
+```scala
+@ requests.post("https://httpbin.org/post", data = ujson.Obj("hello" -> 1))
+
+@ res3.text
+res5: String = """{
+  "args": {},
+  "data": "{\"hello\":1}",
+  "files": {},
+  "form": {},
+...
+```
+
+All this data exchange happens efficiently in a streaming fashion, without
+unnecessarily buffering data in-memory.
+
 Changelog
 =========
+
+0.2.0
+-----
+
+- Added [geny.Writable](#writable) interface
 
 0.1.8
 -----
