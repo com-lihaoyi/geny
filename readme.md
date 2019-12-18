@@ -215,8 +215,8 @@ operations performed, and properly closed when everything is done.
 
 ## Writable
 
-Writable is a minimal interface that can be implemented by any data type that
-writes binary output to a `java.io.OutputStream`:
+`geny.Writable` is a minimal interface that can be implemented by any data type
+that writes binary output to a `java.io.OutputStream`:
 
 ```scala
 trait Writable{
@@ -262,6 +262,12 @@ res5: String = """{
 
 All this data exchange happens efficiently in a streaming fashion, without
 unnecessarily buffering data in-memory.
+
+`geny.Writable` also allows an implementation to ensure cleanup code runs after
+all data has been written (e.g. closing file handles, free-ing managed
+resources) and is much easier to implement than `java.io.InputStream`. Any data
+type that writes bytes out to a `java.io.OutputStream`, `java.io.Writer`, or
+`StringBuilder` can be trivially made to implement `Writable`.
 
 Changelog
 =========
