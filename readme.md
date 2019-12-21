@@ -224,14 +224,6 @@ trait Writable{
 }
 ```
 
-Apart from the built-in implicit constructors that create `Writable`s from
-`String`/`Array[Byte]`/`java.io.InputStream`, `Writable` is also implemented by
-[uPickle](https://github.com/lihaoyi/upickle),
-[Scalatags](https://github.com/lihaoyi/scalatags), and used by
-[Requests-Scala](https://github.com/lihaoyi/requests-scala),
-[OS-Lib](https://github.com/lihaoyi/os-lib) and the
-[Cask web framework](https://github.com/lihaoyi/cask).
-
 `Writable` allows for zero-friction zero-overhead streaming data exchange
 between these libraries, e.g. allowing you pass Scalatags `Frag`s directly
 `os.write`:
@@ -243,16 +235,16 @@ import $ivy.$                             , scalatags.Text.all._
 @ os.write(os.pwd / "hello.html", html(body(h1("Hello"), p("World!"))))
 
 @ os.read(os.pwd / "hello.html")
-res8: String = "<html><body><h1>Hello</h1><p>World!</p></body></html>"
+res1: String = "<html><body><h1>Hello</h1><p>World!</p></body></html>"
 ```
 
-Or sending `ujson.Value`s directly to `requests.post`
+Sending `ujson.Value`s directly to `requests.post`
 
 ```scala
 @ requests.post("https://httpbin.org/post", data = ujson.Obj("hello" -> 1))
 
-@ res3.text
-res5: String = """{
+@ res2.text
+res3: String = """{
   "args": {},
   "data": "{\"hello\":1}",
   "files": {},
@@ -260,14 +252,63 @@ res5: String = """{
 ...
 ```
 
+Serialize Scala data types directly to disk:
+
+```scala
+@ os.write(os.pwd / "two.json", upickle.default.writable(Map((1, 2) -> (3, 4), (5, 6) -> (7, 8))))
+
+@ os.read(os.pwd / "two.json")
+res5: String = "[[[1,2],[3,4]],[[5,6],[7,8]]]"
+```
+ 
+Or streaming file uploads over HTTP:
+
+```scala
+@ requests.post("https://httpbin.org/post", data = os.read.inputStream(os.pwd / "two.json")).text
+res6: String = """{
+  "args": {},
+  "data": "[[[1,2],[3,4]],[[5,6],[7,8]]]",
+  "files": {},
+  "form": {},
+```
+
 All this data exchange happens efficiently in a streaming fashion, without
 unnecessarily buffering data in-memory.
 
 `geny.Writable` also allows an implementation to ensure cleanup code runs after
 all data has been written (e.g. closing file handles, free-ing managed
-resources) and is much easier to implement than `java.io.InputStream`. Any data
+resources) and is much easier to implement than `java.io.InputStream`.
+
+Writable has implicit constructors from the following types:
+
+- `String`
+- `Array[Byte]`
+- `java.io.InputStream`
+
+And implemented by the following libraries:
+
+- [uPickle](https://github.com/lihaoyi/upickle): implemented by `ujson.Value`, `upack.Msg`,
+  and can be constructed from JSON-serializable data structures via `upickle.default.writable`
+  or `upickle.default.writableBinary`
+
+- [Scalatags](https://github.com/lihaoyi/scalatags): implemented by `scalatags.Text.Tag`
+
+And is accepted by the following libraries:
+
+- [Requests-Scala](https://github.com/lihaoyi/requests-scala) takes `Writable` in the 
+  `data =` field of `requests.post` and `requests.put`
+
+- [OS-Lib](https://github.com/lihaoyi/os-lib) accepts a `Writable` in `os.write` and
+  the `stdin` parameter of `subprocess.call` or `subprocess.spawn`
+
+- [Cask web framework](https://github.com/lihaoyi/cask): supports returning a `Writable`
+  from any Cask endpoint
+
+You can also implement `Writable`s in your own datatypes or accept it in your own method,
+if you want to inter-operate with this existing ecosystem of libraries. Any data
 type that writes bytes out to a `java.io.OutputStream`, `java.io.Writer`, or
 `StringBuilder` can be trivially made to implement `Writable`.
+
 
 Changelog
 =========
