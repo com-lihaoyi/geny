@@ -39,21 +39,21 @@ object Writable{
  * callback returns.
  */
 trait Readable extends Writable{
-  def readBytesThrough(f: InputStream => Unit): Unit
+  def readBytesThrough[T](f: InputStream => T): T
   def writeBytesTo(out: OutputStream): Unit = readBytesThrough(Internal.transfer(_, out))
 }
 object Readable{
   implicit class StringByteSource(s: String) extends Readable{
-    def readBytesThrough(f: InputStream => Unit): Unit = {
+    def readBytesThrough[T](f: InputStream => T): T = {
       f(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)))
     }
   }
 
   implicit class ByteArrayByteSource(a: Array[Byte]) extends Readable{
-    def readBytesThrough(f: InputStream => Unit): Unit = f(new ByteArrayInputStream(a))
+    def readBytesThrough[T](f: InputStream => T): T = f(new ByteArrayInputStream(a))
   }
 
   implicit class InputStreamByteSource(i: InputStream) extends Readable{
-    def readBytesThrough(f: InputStream => Unit): Unit = f(i)
+    def readBytesThrough[T](f: InputStream => T): T = f(i)
   }
 }

@@ -1,9 +1,9 @@
-Geny 0.4.1
+Geny 0.4.2
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.4.1"
-"com.lihaoyi" %%% "geny" % "0.4.1" // Scala.js / native
+"com.lihaoyi" %% "geny" % "0.4.2"
+"com.lihaoyi" %%% "geny" % "0.4.2" // Scala.js / native
 ```
 
 Geny is a small library that provides push-based versions of common standard
@@ -255,7 +255,7 @@ res3: String = """{
 Serialize Scala data types directly to disk:
 
 ```scala
-@ os.write(os.pwd / "two.json", upickle.default.writable(Map((1, 2) -> (3, 4), (5, 6) -> (7, 8))))
+@ os.write(os.pwd / "two.json", upickle.default.stream(Map((1, 2) -> (3, 4), (5, 6) -> (7, 8))))
 
 @ os.read(os.pwd / "two.json")
 res5: String = "[[[1,2],[3,4]],[[5,6],[7,8]]]"
@@ -264,7 +264,7 @@ res5: String = "[[[1,2],[3,4]],[[5,6],[7,8]]]"
 Or streaming file uploads over HTTP:
 
 ```scala
-@ requests.post("https://httpbin.org/post", data = os.read.inputStream(os.pwd / "two.json")).text
+@ requests.post("https://httpbin.org/post", data = os.read.stream(os.pwd / "two.json")).text
 res6: String = """{
   "args": {},
   "data": "[[[1,2],[3,4]],[[5,6],[7,8]]]",
@@ -313,8 +313,8 @@ type that writes bytes out to a `java.io.OutputStream`, `java.io.Writer`, or
 Changelog
 =========
 
-0.4.1
-----
+0.4.2
+-----
 
 - Standardize `geny.Readable` as well
 
