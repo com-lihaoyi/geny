@@ -34,26 +34,26 @@ object Writable{
  * [[Writable]] by transferring the bytes from the InputStream to the OutputStream,
  * but not every [[Writable]] is a [[Readable]].
  *
- * Note that the InputStream is only available inside the `readBytesFrom`, and
+ * Note that the InputStream is only available inside the `readBytesThrough`, and
  * may be closed and cleaned up (along with any associated resources) once the
  * callback returns.
  */
 trait Readable extends Writable{
-  def readBytesFrom(f: InputStream => Unit): Unit
-  def writeBytesTo(out: OutputStream): Unit = readBytesFrom(Internal.transfer(_, out))
+  def readBytesThrough(f: InputStream => Unit): Unit
+  def writeBytesTo(out: OutputStream): Unit = readBytesThrough(Internal.transfer(_, out))
 }
 object Readable{
   implicit class StringByteSource(s: String) extends Readable{
-    def readBytesFrom(f: InputStream => Unit): Unit = {
+    def readBytesThrough(f: InputStream => Unit): Unit = {
       f(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)))
     }
   }
 
   implicit class ByteArrayByteSource(a: Array[Byte]) extends Readable{
-    def readBytesFrom(f: InputStream => Unit): Unit = f(new ByteArrayInputStream(a))
+    def readBytesThrough(f: InputStream => Unit): Unit = f(new ByteArrayInputStream(a))
   }
 
   implicit class InputStreamByteSource(i: InputStream) extends Readable{
-    def readBytesFrom(f: InputStream => Unit): Unit = f(i)
+    def readBytesThrough(f: InputStream => Unit): Unit = f(i)
   }
 }
