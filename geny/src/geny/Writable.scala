@@ -37,14 +37,6 @@ object Writable{
      def writeBytesTo(out: OutputStream) = out.write(a)
   }
   implicit class InputStreamByteSource(i: InputStream) extends Writable{
-     def writeBytesTo(out: OutputStream) = {
-       val buffer = new Array[Byte](8192)
-       var r = 0
-       while (r != -1) {
-         r = i.read(buffer)
-         if (r != -1) out.write(buffer, 0, r)
-       }
-       i.close()
-     }
+     def writeBytesTo(out: OutputStream) = Internal.transfer(i, out)
   }
 }

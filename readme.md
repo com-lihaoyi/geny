@@ -313,6 +313,11 @@ type that writes bytes out to a `java.io.OutputStream`, `java.io.Writer`, or
 Changelog
 =========
 
+0.2.1
+-----
+
+- Standardize `geny.Readable` as well
+
 0.2.0
 -----
 
