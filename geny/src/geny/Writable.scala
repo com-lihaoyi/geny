@@ -1,5 +1,5 @@
 package geny
-import java.io.{InputStream, OutputStream, OutputStreamWriter}
+import java.io.{ByteArrayInputStream, InputStream, OutputStream, OutputStreamWriter}
 import java.nio.charset.StandardCharsets
 
 /**
@@ -23,20 +23,37 @@ import java.nio.charset.StandardCharsets
 trait Writable{
   def writeBytesTo(out: OutputStream): Unit
 }
-
 object Writable{
-  implicit class StringByteSource(s: String) extends Writable{
-    def writeBytesTo(out: OutputStream) = {
-      val pw = new OutputStreamWriter(out, StandardCharsets.UTF_8)
-      pw.write(s)
-      pw.flush()
-    }
+  implicit def readableWritable[T](t: T)(implicit f: T => Readable): Writable = f(t)
+}
 
+/**
+ * A [[Readable]] is a source of bytes that can be read from an InputStream
+ *
+ * A subtype of [[Writable]], every [[Readable]] can be trivially used as a
+ * [[Writable]] by transferring the bytes from the InputStream to the OutputStream,
+ * but not every [[Writable]] is a [[Readable]].
+ *
+ * Note that the InputStream is only available inside the `readBytesFrom`, and
+ * may be closed and cleaned up (along with any associated resources) once the
+ * callback returns.
+ */
+trait Readable extends Writable{
+  def readBytesFrom(f: InputStream => Unit): Unit
+  def writeBytesTo(out: OutputStream): Unit = readBytesFrom(Internal.transfer(_, out))
+}
+object Readable{
+  implicit class StringByteSource(s: String) extends Readable{
+    def readBytesFrom(f: InputStream => Unit): Unit = {
+      f(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)))
+    }
   }
-  implicit class ByteArrayByteSource(a: Array[Byte]) extends Writable{
-     def writeBytesTo(out: OutputStream) = out.write(a)
+
+  implicit class ByteArrayByteSource(a: Array[Byte]) extends Readable{
+    def readBytesFrom(f: InputStream => Unit): Unit = f(new ByteArrayInputStream(a))
   }
-  implicit class InputStreamByteSource(i: InputStream) extends Writable{
-     def writeBytesTo(out: OutputStream) = Internal.transfer(i, out)
+
+  implicit class InputStreamByteSource(i: InputStream) extends Readable{
+    def readBytesFrom(f: InputStream => Unit): Unit = f(i)
   }
 }

@@ -8,7 +8,7 @@ import scala.io.Codec
  * Encapsulates an `Array[Byte]` and provides convenience methods for
  * reading the data out of it.
  */
-trait Readable {
+trait ByteData {
 
   def bytes: Array[Byte]
 
@@ -27,8 +27,8 @@ trait Readable {
   def lines(): Vector[String] = lines(StandardCharsets.UTF_8)
   def lines(codec: Codec): Vector[String] = Predef.augmentString(text(codec)).lines.toVector
 }
-object Readable{
-  case class Chunks(chunks: Seq[Bytes]) extends Readable{
+object ByteData{
+  case class Chunks(chunks: Seq[Bytes]) extends ByteData{
     val bytes = chunks.iterator.map(_.array).toArray.flatten
   }
 }
