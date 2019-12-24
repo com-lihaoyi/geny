@@ -1,9 +1,9 @@
-Geny 0.3.0
+Geny 0.4.0
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.3.0"
-"com.lihaoyi" %%% "geny" % "0.3.0" // Scala.js / native
+"com.lihaoyi" %% "geny" % "0.4.0"
+"com.lihaoyi" %%% "geny" % "0.4.0" // Scala.js / native
 ```
 
 Geny is a small library that provides push-based versions of common standard
@@ -313,7 +313,7 @@ type that writes bytes out to a `java.io.OutputStream`, `java.io.Writer`, or
 Changelog
 =========
 
-0.3.0
+0.4.0
 -----
 
 - Standardize `geny.Readable` as well
