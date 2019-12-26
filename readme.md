@@ -11,7 +11,7 @@ library interfaces:
 
 - [geny.Generator[T]](#generator), a push-based version of `scala.Iterator[T]`
 - [geny.Writable](#writable), a push-based version of `java.io.InputStream`
-  - [geny.Readable](#writable), a pull-based subclass of `Writable`
+  - [geny.Readable](#readable), a pull-based subclass of `Writable`
 
 ## Generator
 
