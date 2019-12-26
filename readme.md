@@ -9,8 +9,9 @@ Geny 0.4.2
 Geny is a small library that provides push-based versions of common standard
 library interfaces:
 
-- `geny.Generator[T]`, a push-based version of `scala.Iterator[T]`
-- `geny.Writable`, a push-based version of `java.io.InputStream`
+- [geny.Generator[T]](#generator), a push-based version of `scala.Iterator[T]`
+- [geny.Writable](#writable), a push-based version of `java.io.InputStream`
+  - [geny.Readable](#writable), a pull-based subclass of `Writable`
 
 ## Generator
 
@@ -287,11 +288,18 @@ Writable has implicit constructors from the following types:
 
 And implemented by the following libraries:
 
-- [uPickle](https://github.com/lihaoyi/upickle): implemented by `ujson.Value`, `upack.Msg`,
-  and can be constructed from JSON-serializable data structures via `upickle.default.writable`
-  or `upickle.default.writableBinary`
+- [uPickle](https://github.com/lihaoyi/upickle): implemented by `ujson.Value`,
+  `upack.Msg`, and can be constructed from JSON-serializable data structures via
+  `upickle.default.stream` or `upickle.default.writableBinary`
 
 - [Scalatags](https://github.com/lihaoyi/scalatags): implemented by `scalatags.Text.Tag`
+
+- [Requests-Scala](https://github.com/lihaoyi/requests-scala):
+  `requests.get.stream(...)` methods return a [Readable](#readable) subtype of
+  `Writable`
+
+- [OS-Lib](https://github.com/lihaoyi/os-lib): `os.read.stream` returns a
+  [Readable](#readable) subtype of `Writable`
 
 And is accepted by the following libraries:
 
@@ -304,11 +312,63 @@ And is accepted by the following libraries:
 - [Cask web framework](https://github.com/lihaoyi/cask): supports returning a `Writable`
   from any Cask endpoint
 
-You can also implement `Writable`s in your own datatypes or accept it in your own method,
-if you want to inter-operate with this existing ecosystem of libraries. Any data
-type that writes bytes out to a `java.io.OutputStream`, `java.io.Writer`, or
-`StringBuilder` can be trivially made to implement `Writable`.
+Any data type that writes bytes out to a `java.io.OutputStream`,
+`java.io.Writer`, or `StringBuilder` can be trivially made to implement
+`Writable`, which allows it to output data in a streaming fashion without
+needing to buffer it in memory. You can also implement `Writable`s in your own
+datatypes or accept it in your own method, if you want to inter-operate with
+this existing ecosystem of libraries.
 
+### Readable
+
+```scala
+trait Readable extends Writable{
+  def readBytesThrough[T](f: InputStream => T): T
+  def writeBytesTo(out: OutputStream): Unit = readBytesThrough(Internal.transfer(_, out))
+}
+````
+
+`Readable` is a subtype of [Writable](#writable) that provides an additional
+guarantee: not only can it be written to an `java.io.OutputStream`, it can also
+be read from by providing a `java.io.InputStream`. Note that the `InputStream`
+is scoped and only available within the `readBytesThrough` callback: after that
+the `InputStream` will be closed and associated resources (HTTP connections,
+file handles, etc.) will be released.
+
+`Readable` is supported by the following built in types:
+
+- `String`
+- `Array[Byte]`
+- `java.io.InputStream`
+
+Implemented by the following libraries
+
+- [Requests-Scala](https://github.com/lihaoyi/requests-scala):
+  `requests.get.stream(...)` methods return a `Readable`
+
+- [OS-Lib](https://github.com/lihaoyi/os-lib): `os.read.stream` returns a
+  `Readable`
+
+And is accepted by the following libraries:
+
+- [uPickle](https://github.com/lihaoyi/upickle): `upickle.default.read`,
+  `upickle.default.readBinary`, `ujson.read`, and `upack.read` all support
+  `Readable`
+
+- [FastParse](https://github.com/lihaoyi/os-lib): `fastparse.parse` accepts
+  parsing streaming input from any `Readable`
+
+`Readable` can be used to allow handling of streaming input, e.g. parsing
+JSONdirectly from a file or HTTP request, without needing to buffer the whole
+file in memory. You can also implement `Readable` in your own data types, to
+allow them to be seamlessly passed into uPickle or FastParse to be parsed in a
+streaming fashion.
+
+Note that in exchange for the reduced memory usage, parsing streaming data via
+`Readable` typically comes with a 20-40% CPU performance penalty over parsing
+data already in memory, due to the additional book-keeping necessary with
+streaming data. Whether it is worthwhile or not depends on your particular usage
+pattern.
 
 Changelog
 =========
