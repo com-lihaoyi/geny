@@ -301,6 +301,9 @@ And implemented by the following libraries:
 - [OS-Lib](https://github.com/lihaoyi/os-lib): `os.read.stream` returns a
   [Readable](#readable) subtype of `Writable`
 
+- [Cask](https://github.com/lihaoyi/cask): `cask.Request` returns a
+  [Readable](#readable) subtype of `Writable`
+
 And is accepted by the following libraries:
 
 - [Requests-Scala](https://github.com/lihaoyi/requests-scala) takes `Writable` in the 
@@ -309,7 +312,7 @@ And is accepted by the following libraries:
 - [OS-Lib](https://github.com/lihaoyi/os-lib) accepts a `Writable` in `os.write` and
   the `stdin` parameter of `subprocess.call` or `subprocess.spawn`
 
-- [Cask web framework](https://github.com/lihaoyi/cask): supports returning a `Writable`
+- [Cask](https://github.com/lihaoyi/cask): supports returning a `Writable`
   from any Cask endpoint
 
 Any data type that writes bytes out to a `java.io.OutputStream`,
@@ -348,6 +351,9 @@ Implemented by the following libraries
 
 - [OS-Lib](https://github.com/lihaoyi/os-lib): `os.read.stream` returns a
   `Readable`
+
+- [Cask](https://github.com/lihaoyi/cask): `cask.Request` implements `Readable`
+  to allow streaming of request data
 
 And is accepted by the following libraries:
 
