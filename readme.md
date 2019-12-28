@@ -364,17 +364,30 @@ And is accepted by the following libraries:
 - [FastParse](https://github.com/lihaoyi/os-lib): `fastparse.parse` accepts
   parsing streaming input from any `Readable`
 
-`Readable` can be used to allow handling of streaming input, e.g. parsing
-JSONdirectly from a file or HTTP request, without needing to buffer the whole
-file in memory. You can also implement `Readable` in your own data types, to
-allow them to be seamlessly passed into uPickle or FastParse to be parsed in a
-streaming fashion.
+`Readable` can be used to allow handling of streaming input, e.g. parsing JSON
+directly from a file or HTTP request, without needing to buffer the whole file
+in memory:
+
+```scala
+@ val data = ujson.read(requests.get.stream("https://api.github.com/events"))
+data: ujson.Value.Value = Arr(
+  ArrayBuffer(
+    Obj(
+      LinkedHashMap(
+        "id" -> Str("11169088214"),
+        "type" -> Str("PushEvent"),
+        "actor" -> Obj(
+...
+```
+
+You can also implement `Readable` in your own data types, to allow them to be
+seamlessly passed into uPickle or FastParse to be parsed in a streaming fashion.
 
 Note that in exchange for the reduced memory usage, parsing streaming data via
-`Readable` typically comes with a 20-40% CPU performance penalty over parsing
-data already in memory, due to the additional book-keeping necessary with
-streaming data. Whether it is worthwhile or not depends on your particular usage
-pattern.
+`Readable` in uPickle or FastParse typically comes with a 20-40% CPU performance
+penalty over parsing data already in memory, due to the additional book-keeping
+necessary with streaming data. Whether it is worthwhile or not depends on your
+particular usage pattern.
 
 Changelog
 =========
