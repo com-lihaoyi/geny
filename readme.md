@@ -13,6 +13,11 @@ library interfaces:
 - [geny.Writable](#writable), a push-based version of `java.io.InputStream`
   - [geny.Readable](#readable), a pull-based subclass of `Writable`
 
+More background behind the `Writable` and `Readable` interface can be found in
+this blog post:
+
+- [Standardizing IO Interfaces for Scala Libraries](http://www.lihaoyi.com/post/StandardizingIOInterfacesforScalaLibraries.html)
+
 ## Generator
 
 `Generator` is basically the inverse of a `scala.Iterator`: instead of the core
