@@ -29,6 +29,6 @@ trait ByteData {
 }
 object ByteData{
   case class Chunks(chunks: Seq[Bytes]) extends ByteData{
-    val bytes = chunks.iterator.map(_.array).toArray.flatten
+    lazy val bytes = chunks.iterator.map(_.array).toArray.flatten
   }
 }

@@ -23,7 +23,21 @@ import java.nio.charset.StandardCharsets
 trait Writable{
   def writeBytesTo(out: OutputStream): Unit
 }
-object Writable{
+object Writable extends LowPriWritable {
+  implicit class StringWritable(s: String) extends Writable{
+    def writeBytesTo(out: OutputStream): Unit = {
+      val writer = new java.io.OutputStreamWriter(out, StandardCharsets.UTF_8)
+      writer.write(s)
+      writer.flush()
+    }
+  }
+
+  implicit class ByteArrayWritable(a: Array[Byte]) extends Writable{
+    def writeBytesTo(out: OutputStream): Unit = out.write(a)
+  }
+}
+
+trait LowPriWritable{
   implicit def readableWritable[T](t: T)(implicit f: T => Readable): Writable = f(t)
 }
 
@@ -43,17 +57,17 @@ trait Readable extends Writable{
   def writeBytesTo(out: OutputStream): Unit = readBytesThrough(Internal.transfer(_, out))
 }
 object Readable{
-  implicit class StringByteSource(s: String) extends Readable{
+  implicit class StringReadable(s: String) extends Readable{
     def readBytesThrough[T](f: InputStream => T): T = {
       f(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)))
     }
   }
 
-  implicit class ByteArrayByteSource(a: Array[Byte]) extends Readable{
+  implicit class ByteArrayReadable(a: Array[Byte]) extends Readable{
     def readBytesThrough[T](f: InputStream => T): T = f(new ByteArrayInputStream(a))
   }
 
-  implicit class InputStreamByteSource(i: InputStream) extends Readable{
+  implicit class InputStreamReadable(i: InputStream) extends Readable{
     def readBytesThrough[T](f: InputStream => T): T = f(i)
   }
 }

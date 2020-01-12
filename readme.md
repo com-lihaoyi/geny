@@ -1,9 +1,9 @@
-Geny 0.4.2
+Geny 0.5.0
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.4.2"
-"com.lihaoyi" %%% "geny" % "0.4.2" // Scala.js / native
+"com.lihaoyi" %% "geny" % "0.5.0"
+"com.lihaoyi" %%% "geny" % "0.5.0" // Scala.js / native
 ```
 
 Geny is a small library that provides push-based versions of common standard
@@ -396,6 +396,12 @@ particular usage pattern.
 
 Changelog
 =========
+
+0.5.0
+-----
+
+- Improve streaming of `InputStream`s to `OutputStream`s by dynamically sizing
+  the transfer buffer.
 
 0.4.2
 -----
