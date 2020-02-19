@@ -47,12 +47,12 @@ object geny extends Module {
     def scalaJSVersion = crossJSVersion
     object test extends Tests with CommonTestModule
   }
-/*
-  object native extends Cross[NativeGenyModule](("2.11.12", "0.3.8"))
+
+  object native extends Cross[NativeGenyModule](("2.11.12", "0.3.9"), ("2.11.12", "0.4.0-M2"))
   class NativeGenyModule(val crossScalaVersion: String, crossScalaNativeVersion: String)
     extends Common with ScalaNativeModule with GenyPublishModule
   {
     def scalaNativeVersion = crossScalaNativeVersion
     object test extends Tests with CommonTestModule
-  }*/
+  }
 }
