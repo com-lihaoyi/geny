@@ -65,7 +65,7 @@ trait Generator[+A]{
   def exists(f: A => Boolean) = find(f(_)).isDefined
   def contains(a: Any) = exists(_ == a)
   def forall(f: A => Boolean) = !exists(!f(_))
-  def count(f: A => Boolean = _ => true) = {
+  def count(f: A => Boolean = ((_: Any) => true)) = {
     var result = 0
     generate{ t =>
       if (f(t)) result +=  1

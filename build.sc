@@ -1,5 +1,6 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 
+val dottyCustomVersion = Option(sys.props("dottyVersion"))
 
 trait GenyPublishModule extends PublishModule {
   def artifactName = "geny"
@@ -33,7 +34,7 @@ trait CommonTestModule extends ScalaModule with TestModule {
 
 
 object geny extends Module {
-  object jvm extends Cross[JvmGenyModule]("2.12.8", "2.13.0")
+  object jvm extends Cross[JvmGenyModule]((List("2.12.8", "2.13.0") ++ dottyCustomVersion): _*)
   class JvmGenyModule(val crossScalaVersion: String)
     extends Common with ScalaModule with GenyPublishModule
   {
