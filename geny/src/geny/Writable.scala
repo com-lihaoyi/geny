@@ -22,6 +22,8 @@ import java.nio.charset.StandardCharsets
  */
 trait Writable{
   def writeBytesTo(out: OutputStream): Unit
+  def httpContentType: Option[String] = None
+  def contentLength: Option[Long] = None
 }
 object Writable extends LowPriWritable {
   implicit class StringWritable(s: String) extends Writable{
@@ -30,10 +32,14 @@ object Writable extends LowPriWritable {
       writer.write(s)
       writer.flush()
     }
+    override def httpContentType = Some("text/plain")
+    override def contentLength = Some(Internal.encodedLength(s))
   }
 
   implicit class ByteArrayWritable(a: Array[Byte]) extends Writable{
     def writeBytesTo(out: OutputStream): Unit = out.write(a)
+    override def httpContentType = Some("application/octet-stream")
+    override def contentLength = Some(a.length)
   }
 }
 
@@ -61,10 +67,14 @@ object Readable{
     def readBytesThrough[T](f: InputStream => T): T = {
       f(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)))
     }
+    override def httpContentType = Some("text/plain")
+    override def contentLength = Some(Internal.encodedLength(s))
   }
 
   implicit class ByteArrayReadable(a: Array[Byte]) extends Readable{
     def readBytesThrough[T](f: InputStream => T): T = f(new ByteArrayInputStream(a))
+    override def httpContentType = Some("application/octet-stream")
+    override def contentLength = Some(a.length)
   }
 
   implicit class InputStreamReadable(i: InputStream) extends Readable{

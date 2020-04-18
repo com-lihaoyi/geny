@@ -1,6 +1,8 @@
 package geny
 
 import java.io.{InputStream, OutputStream}
+import java.lang.Character.MAX_SURROGATE
+import java.lang.Character.MIN_SURROGATE
 
 object Internal {
   val defaultMaxBufferStartSize: Int = 64 * 1024
@@ -58,4 +60,54 @@ object Internal {
     maxBufferSize,
     bufferGrowthRatio
   )
+
+  // VENDORED FROM GUAVA
+  def encodedLength(sequence: String) = { // Warning to maintainers: this implementation is highly optimized.
+    val utf16Length = sequence.length
+    var utf8Length = utf16Length
+    var i = 0
+    // This loop optimizes for pure ASCII.
+    while (i < utf16Length && sequence.charAt(i) < 0x80) i += 1
+    // This loop optimizes for chars less than 0x800.
+
+    while (i < utf16Length) {
+      val c = sequence.charAt(i)
+      if (c < 0x800) utf8Length += ((0x7f - c) >>> 31) // branch free!
+      else {
+        utf8Length += encodedLengthGeneral(sequence, i)
+        i = utf16Length // break is not supported, just set i to terminate the loop
+
+      }
+
+      i += 1
+    }
+    if (utf8Length < utf16Length) { // Necessary and sufficient condition for overflow because of maximum 3x expansion
+      throw new IllegalArgumentException("UTF-8 length does not fit in int: " + (utf8Length + (1L << 32)))
+    }
+    utf8Length
+  }
+
+  private def encodedLengthGeneral(sequence: String, start: Int) = {
+    val utf16Length = sequence.length
+    var utf8Length = 0
+    var i = start
+    while (i < utf16Length) {
+      val c = sequence.charAt(i)
+      if (c < 0x800) utf8Length += (0x7f - c) >>> 31
+      else {
+        utf8Length += 2
+        // jdk7+: if (Character.isSurrogate(c)) {
+        if (MIN_SURROGATE <= c && c <= MAX_SURROGATE) { // Check that we have a well-formed surrogate pair.
+          if (Character.codePointAt(sequence, i) == c) throw new IllegalArgumentException(unpairedSurrogateMsg(i))
+          i += 1
+        }
+      }
+
+      i += 1
+    }
+    utf8Length
+  }
+
+  private def unpairedSurrogateMsg(i: Int) = "Unpaired surrogate at index " + i
+  // END VENDORED FROM GUAVA
 }
