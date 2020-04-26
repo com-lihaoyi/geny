@@ -35,7 +35,7 @@ is exhausted fail to close the files if the developer uses `.head` or `.take`
 to access the first few elements of the iterator, and never exhausts it.
 
 Although `geny.Generator` is not part of the normal collections hierarchy, the
-API i intentionally modelled after that of `scala.Iterator` and should be
+API is intentionally modelled after that of `scala.Iterator` and should be
 mostly drop-in, with conversion functions provided where you need to interact
 with APIs using the standard Scala collections.
 
