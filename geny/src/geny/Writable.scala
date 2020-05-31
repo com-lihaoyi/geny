@@ -28,9 +28,7 @@ trait Writable{
 object Writable extends LowPriWritable {
   implicit class StringWritable(s: String) extends Writable{
     def writeBytesTo(out: OutputStream): Unit = {
-      val writer = new java.io.OutputStreamWriter(out, StandardCharsets.UTF_8)
-      writer.write(s)
-      writer.flush()
+      s.grouped(1024).foreach(ss => out.write(ss.getBytes(StandardCharsets.UTF_8)))
     }
     override def httpContentType = Some("text/plain")
     override def contentLength = Some(Internal.encodedLength(s))
