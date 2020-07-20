@@ -2,6 +2,8 @@ package geny
 import java.io.{ByteArrayInputStream, InputStream, OutputStream, OutputStreamWriter}
 import java.nio.charset.StandardCharsets
 
+import sun.nio.cs.StreamEncoder
+
 /**
  * A [[Writable]] is a source of bytes that can be written to an OutputStream.
  *
@@ -28,7 +30,8 @@ trait Writable{
 object Writable extends LowPriWritable {
   implicit class StringWritable(s: String) extends Writable{
     def writeBytesTo(out: OutputStream): Unit = {
-      s.grouped(1024).foreach(ss => out.write(ss.getBytes(StandardCharsets.UTF_8)))
+
+      s.grouped(8192).foreach(ss => out.write(ss.getBytes(StandardCharsets.UTF_8)))
     }
     override def httpContentType = Some("text/plain")
     override def contentLength = Some(Internal.encodedLength(s))
