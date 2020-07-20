@@ -1,9 +1,9 @@
-Geny 0.5.0
+Geny 0.6.2
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.5.0"
-"com.lihaoyi" %%% "geny" % "0.5.0" // Scala.js / native
+"com.lihaoyi" %% "geny" % "0.6.2"
+"com.lihaoyi" %%% "geny" % "0.6.2" // Scala.js / native
 ```
 
 Geny is a small library that provides push-based versions of common standard
@@ -396,6 +396,11 @@ particular usage pattern.
 
 Changelog
 =========
+
+0.6.2
+-----
+
+- Improve performance of writing small strings via `StringWritable`
 
 0.5.0
 -----
