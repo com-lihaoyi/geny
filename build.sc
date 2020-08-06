@@ -38,15 +38,6 @@ object geny extends Module {
   class JvmGenyModule(val crossScalaVersion: String)
     extends Common with ScalaModule with GenyPublishModule
   {
-    override def docJar =
-      if (crossScalaVersion.startsWith("2")) super.docJar
-      else T {
-        val outDir = T.ctx().dest
-        val javadocDir = outDir / 'javadoc
-        os.makeDir.all(javadocDir)
-        mill.api.Result.Success(mill.modules.Jvm.createJar(Agg(javadocDir))(outDir))
-      }
-
     object test extends Tests with CommonTestModule
   }
 
