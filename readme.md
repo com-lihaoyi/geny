@@ -95,7 +95,7 @@ Generator that delegates to the original. The only methods that evaluate
 the `Generator` are the "terminal operation" methods like
 `foreach`/`find`, or the "Conversion" methods like `toArray` or
 similar. In this way, `Generator` behaves similarly to `Iterator`, whose
-`map`/`filter` methods are also lazy until terminal oepration is called.
+`map`/`filter` methods are also lazy until terminal operation is called.
 
 Terminal operations include the following:
 
