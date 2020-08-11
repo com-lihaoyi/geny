@@ -1,5 +1,10 @@
 package geny
-import utest._
+
+// Masking utest's assert in favor of Predef's is a workaround for a bug
+// in Dotty's version of utest.
+// TODO: revert to using utest's assert once utest has been fixed
+import utest.{assert => _, _}
+
 object TestGenerator extends TestSuite{
   val tests = Tests{
     test("toStrings"){
@@ -179,46 +184,36 @@ object TestGenerator extends TestSuite{
         )
       }
       test("head"){
-        assert(
-          Generator.from[IndexedSeq, Int](0 until 10).head == 0,
-          Generator.from[IndexedSeq, Int](5 until 10).head == 5
-        )
+        assert(Generator.from[IndexedSeq, Int](0 until 10).head == 0)
+        assert(Generator.from[IndexedSeq, Int](5 until 10).head == 5)
       }
       test("headOption"){
-        assert(
-          Generator.from[IndexedSeq, Int](0 until 10).headOption == Some(0),
-          Generator.from[IndexedSeq, Int](5 until 10).headOption == Some(5),
-          Generator.from[IndexedSeq, Int](0 until 0).headOption == None
-        )
+        assert(Generator.from[IndexedSeq, Int](0 until 10).headOption == Some(0))
+        assert(Generator.from[IndexedSeq, Int](5 until 10).headOption == Some(5))
+        assert(Generator.from[IndexedSeq, Int](0 until 0).headOption == None)
       }
       test("conversions"){
-        assert(
-          Generator.from[IndexedSeq, Int](0 until 10).toSeq == (0 until 10),
-          Generator.from[IndexedSeq, Int](0 until 10).toVector == (0 until 10),
-          Generator.from[IndexedSeq, Int](0 until 10).toArray.toSeq == (0 until 10),
-          Generator.from[IndexedSeq, Int](0 until 10).toVector == (0 until 10),
-          Generator.from[IndexedSeq, Int](0 until 10).toList == (0 until 10),
-          Generator.from[IndexedSeq, Int](0 until 10).toSet == (0 until 10).toSet
-        )
+        assert(Generator.from[IndexedSeq, Int](0 until 10).toSeq == (0 until 10))
+        assert(Generator.from[IndexedSeq, Int](0 until 10).toVector == (0 until 10))
+        assert(Generator.from[IndexedSeq, Int](0 until 10).toArray.toSeq == (0 until 10))
+        assert(Generator.from[IndexedSeq, Int](0 until 10).toVector == (0 until 10))
+        assert(Generator.from[IndexedSeq, Int](0 until 10).toList == (0 until 10))
+        assert(Generator.from[IndexedSeq, Int](0 until 10).toSet == (0 until 10).toSet)
       }
       test("mkString"){
-        assert(
-          Generator.from[IndexedSeq, Int](0 until 10).mkString == "0123456789",
-          Generator.from[IndexedSeq, Int](0 until 10).mkString(" ") == "0 1 2 3 4 5 6 7 8 9",
-          Generator.from[IndexedSeq, Int](0 until 10).mkString("[", ", ", "]") == "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
-        )
+        assert(Generator.from[IndexedSeq, Int](0 until 10).mkString == "0123456789")
+        assert(Generator.from[IndexedSeq, Int](0 until 10).mkString(" ") == "0 1 2 3 4 5 6 7 8 9")
+        assert(Generator.from[IndexedSeq, Int](0 until 10).mkString("[", ", ", "]") == "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]")
       }
       test("aggregates"){
-        assert(
-          Generator.from[IndexedSeq, Int](0 until 10).min == 0,
-          Generator.from[IndexedSeq, Int](0 until 10).max == 9,
-          Generator.from[IndexedSeq, Int](0 until 10).maxBy(x => math.abs(3 - x)) == 9,
-          Generator.from[IndexedSeq, Int](0 until 10).minBy(x => math.abs(3 - x)) == 3,
-          Generator.from[IndexedSeq, Int](0 until 10).sum == 45,
-          Generator.from[IndexedSeq, Int](1 until 10).product == 362880,
-          Generator.from[IndexedSeq, Int](0 until 10).reduce(_ + _) == 45,
-          Generator.from[IndexedSeq, Int](0 until 10).fold(0)(_ + _) == 45
-        )
+        assert(Generator.from[IndexedSeq, Int](0 until 10).min == 0)
+        assert(Generator.from[IndexedSeq, Int](0 until 10).max == 9)
+        assert(Generator.from[IndexedSeq, Int](0 until 10).maxBy(x => math.abs(3 - x)) == 9)
+        assert(Generator.from[IndexedSeq, Int](0 until 10).minBy(x => math.abs(3 - x)) == 3)
+        assert(Generator.from[IndexedSeq, Int](0 until 10).sum == 45)
+        assert(Generator.from[IndexedSeq, Int](1 until 10).product == 362880)
+        assert(Generator.from[IndexedSeq, Int](0 until 10).reduce(_ + _) == 45)
+        assert(Generator.from[IndexedSeq, Int](0 until 10).fold(0)(_ + _) == 45)
       }
       test("creation"){
         val range = 0 until 10
@@ -227,14 +222,12 @@ object TestGenerator extends TestSuite{
         val vector = range.toVector
         val array = range.toArray
         val set = range.toSet
-        assert(
-          (range: Generator[Int]).sum == 45,
-          (seq: Generator[Int]).sum == 45,
-          (iterator: Generator[Int]).sum == 45,
-          (vector: Generator[Int]).sum == 45,
-          (array: Generator[Int]).sum == 45,
-          (set: Generator[Int]).sum == 45
-        )
+        assert((range: Generator[Int]).sum == 45)
+        assert((seq: Generator[Int]).sum == 45)
+        assert((iterator: Generator[Int]).sum == 45)
+        assert((vector: Generator[Int]).sum == 45)
+        assert((array: Generator[Int]).sum == 45)
+        assert((set: Generator[Int]).sum == 45)
       }
       test("selfClosing"){
         var openSources = 0
