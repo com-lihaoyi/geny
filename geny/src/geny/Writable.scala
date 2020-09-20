@@ -22,7 +22,7 @@ import sun.nio.cs.StreamEncoder
  * Libraries using [[Writable]] are expected to extend it to provide additional
  * methods or additional implicit constructors that make sense in their context.
  */
-trait Writable{
+trait Writable extends Any{
   def writeBytesTo(out: OutputStream): Unit
   def httpContentType: Option[String] = None
   def contentLength: Option[Long] = None
