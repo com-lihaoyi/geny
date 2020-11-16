@@ -28,13 +28,13 @@ trait Common extends CrossScalaModule {
 }
 
 trait CommonTestModule extends ScalaModule with TestModule {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.4")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.5")
   def testFrameworks = Seq("utest.runner.Framework")
 }
 
 
 object geny extends Module {
-  object jvm extends Cross[JvmGenyModule]((List("2.12.8", "2.13.0", "0.27.0-RC1") ++ dottyCustomVersion): _*)
+  object jvm extends Cross[JvmGenyModule]((List("2.12.8", "2.13.0", "3.0.0-M1") ++ dottyCustomVersion): _*)
   class JvmGenyModule(val crossScalaVersion: String)
     extends Common with ScalaModule with GenyPublishModule
   {
