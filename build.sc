@@ -34,7 +34,7 @@ trait CommonTestModule extends ScalaModule with TestModule {
 
 
 object geny extends Module {
-  object jvm extends Cross[JvmGenyModule]((List("2.12.8", "2.13.0", "3.0.0-M2") ++ dottyCustomVersion): _*)
+  object jvm extends Cross[JvmGenyModule]((List("2.12.8", "2.13.0", "3.0.0-M3") ++ dottyCustomVersion): _*)
   class JvmGenyModule(val crossScalaVersion: String)
     extends Common with ScalaModule with GenyPublishModule
   {
