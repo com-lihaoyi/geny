@@ -18,6 +18,31 @@ object TestReadable extends TestSuite{
       (Array[Byte](4, 5, 6): Readable).writeBytesTo(out)
       out.toByteArray ==> Array[Byte](1, 2, 3, 4, 5, 6)
     }
+    test("ByteBuffer"){
+      def bb(direct: Boolean, bytes: Int*) = {
+        val bb = if (direct) {
+          java.nio.ByteBuffer.allocateDirect(bytes.length)
+        } else {
+          java.nio.ByteBuffer.allocate(bytes.length)
+        }
+        for ((b, i) <- bytes.zipWithIndex) {
+          bb.put(i, b.toByte)
+        }
+        bb
+      }
+      test("indirect"){
+        val out = new ByteArrayOutputStream()
+        (bb(false, 1, 2, 3): Readable).writeBytesTo(out)
+        (bb(false, 4, 5, 6): Readable).writeBytesTo(out)
+        out.toByteArray ==> Array[Byte](1, 2, 3, 4, 5, 6)
+      }
+      test("direct"){
+        val out = new ByteArrayOutputStream()
+        (bb(true, 1, 2, 3): Readable).writeBytesTo(out)
+        (bb(true, 4, 5, 6): Readable).writeBytesTo(out)
+        out.toByteArray ==> Array[Byte](1, 2, 3, 4, 5, 6)
+      }
+    }
     test("InputStream"){
       val out = new ByteArrayOutputStream()
 

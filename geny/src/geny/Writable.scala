@@ -42,6 +42,35 @@ object Writable extends LowPriWritable {
     override def httpContentType = Some("application/octet-stream")
     override def contentLength = Some(a.length)
   }
+
+  implicit class ByteBufferWritable(buffer: java.nio.ByteBuffer) extends Writable {
+    def writeBytesTo(out: OutputStream): Unit = {
+      // TODO: there is room for optimization here. We could match on the output
+      // stream and in case it has an underlying NIO channel, write the buffer
+      // directly to it. E.g.
+      //
+      // out match {
+      //   case fs: java.io.FileOutputStream => fs.getChannel().write(buffer)
+      //   case _ =>
+      // }
+      //
+      // This optimization however is not available on ScalaJS, and hence
+      // requires a restructuring of this source file.
+      val bb = buffer.duplicate().order(buffer.order())
+      var tmp = new Array[Byte](8192)
+      val length = bb.remaining()
+      var count = 0
+      while (count < length) {
+        val l = math.min(tmp.size, length - count)
+        bb.get(tmp, 0, l)
+        out.write(tmp, 0, l)
+        count += l
+      }
+    }
+    override def httpContentType = Some("application/octet-stream")
+    override def contentLength = Some(buffer.remaining())
+  }
+
 }
 
 trait LowPriWritable{
@@ -76,6 +105,31 @@ object Readable{
     def readBytesThrough[T](f: InputStream => T): T = f(new ByteArrayInputStream(a))
     override def httpContentType = Some("application/octet-stream")
     override def contentLength = Some(a.length)
+  }
+
+  implicit class ByteBufferReadable(buffer: java.nio.ByteBuffer) extends Readable{
+    def readBytesThrough[T](f: InputStream => T): T = {
+      val bb = buffer.duplicate().order(buffer.order())
+
+      val is = new InputStream {
+        override def read(): Int = if (!bb.hasRemaining()) {
+          -1
+        } else {
+          bb.get() & 0xff
+        }
+        override def read(bytes: Array[Byte], off: Int, len: Int) = if (!bb.hasRemaining()) {
+          -1
+        } else {
+          val l = math.min(len, bb.remaining())
+          bb.get(bytes, off, l)
+          l
+        }
+      }
+
+      f(is)
+    }
+    override def httpContentType = Some("application/octet-stream")
+    override def contentLength = Some(buffer.remaining())
   }
 
   implicit class InputStreamReadable(i: InputStream) extends Readable{
