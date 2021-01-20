@@ -1,18 +1,18 @@
+os: linux
 language: scala
-sudo: required
-dist: trusty
+dist: bionic
 addons:
   apt:
     update: true
 
 jdk:
-  - oraclejdk8
+  - openjdk8
 
 script:
-  - curl https://raw.githubusercontent.com/scala-native/scala-native/master/scripts/travis_setup.sh | bash -x
   - export PATH=~/bin/mill:$PATH
-  - ./mill geny.__.test
+  - ./mill -i __.test
 
 cache:
   directories:
-    - $HOME/.coursier
+    - $HOME/.cache/coursier/v1
+    - $HOME/.mill
