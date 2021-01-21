@@ -42,7 +42,7 @@ trait Common extends CrossScalaModule {
 }
 
 trait CommonTestModule extends ScalaModule with TestModule {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.5")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.6")
   def testFrameworks = Seq("utest.runner.Framework")
 }
 
