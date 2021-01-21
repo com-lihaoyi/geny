@@ -19,7 +19,7 @@ val scalaNativeVersions = for {
 trait GenyPublishModule extends PublishModule {
   def artifactName = "geny"
 
-  def publishVersion = "0.6.3"
+  def publishVersion = "0.6.4"
 
   def pomSettings = PomSettings(
     description = artifactName(),
