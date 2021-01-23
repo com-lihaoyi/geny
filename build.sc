@@ -19,7 +19,7 @@ val scalaNativeVersions = for {
 trait GenyPublishModule extends PublishModule {
   def artifactName = "geny"
 
-  def publishVersion = "0.6.4"
+  def publishVersion = "0.6.5"
 
   def pomSettings = PomSettings(
     description = artifactName(),
@@ -42,7 +42,7 @@ trait Common extends CrossScalaModule {
 }
 
 trait CommonTestModule extends ScalaModule with TestModule {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.6")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.7")
   def testFrameworks = Seq("utest.runner.Framework")
 }
 
