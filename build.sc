@@ -4,7 +4,7 @@ val dottyCustomVersion = sys.props.get("dottyVersion")
 
 val scala212 = "2.12.13"
 val scala213 = "2.13.4"
-val scala3 = "3.0.0-M3"
+val scala3 = "3.0.0-RC1"
 
 val scalaJSVersions = for {
   scalaV <- Seq(scala213, scala212)
