@@ -4,7 +4,7 @@ val dottyCustomVersion = sys.props.get("dottyVersion")
 
 val scala212 = "2.12.13"
 val scala213 = "2.13.4"
-val scala3 = "3.0.0-M3"
+val scala3 = "3.0.0-RC1"
 
 val scalaJSVersions = for {
   scalaV <- Seq(scala213, scala212)
@@ -53,6 +53,17 @@ object geny extends Module {
     extends Common with ScalaModule with GenyPublishModule
   {
     object test extends Tests with CommonTestModule
+
+    // FIXME: scaladoc 3 is not supported by mill yet. Remove the override
+    // once it is.
+    override def docJar =
+      if (crossScalaVersion.startsWith("2")) super.docJar
+      else T {
+        val outDir = T.ctx().dest
+        val javadocDir = outDir / 'javadoc
+        os.makeDir.all(javadocDir)
+        mill.api.Result.Success(mill.modules.Jvm.createJar(Agg(javadocDir))(outDir))
+      }
   }
 
   object js extends Cross[JSGenyModule](scalaJSVersions: _*)
