@@ -1,4 +1,6 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version_mill0.9:0.1.1`
+import de.tobiasroeser.mill.vcs.version.VcsVersion
 
 val dottyCustomVersion = sys.props.get("dottyVersion")
 
@@ -6,20 +8,23 @@ val scala212 = "2.12.13"
 val scala213 = "2.13.4"
 val scala3 = "3.0.0-RC1"
 
+val scalaVersions = scala213 :: scala212 :: scala3 :: dottyCustomVersion.toList
+val scala2Versions = scalaVersions.filter(_.startsWith("2."))
+
 val scalaJSVersions = for {
-  scalaV <- Seq(scala213, scala212)
+  scalaV <- scala2Versions
   scalaJSV <- Seq("0.6.33", "1.4.0")
 } yield (scalaV, scalaJSV)
 
 val scalaNativeVersions = for {
-  scalaV <- Seq(scala213, scala212)
+  scalaV <- scala2Versions
   scalaNativeV <- Seq("0.4.0")
 } yield (scalaV, scalaNativeV)
 
 trait GenyPublishModule extends PublishModule {
   def artifactName = "geny"
 
-  def publishVersion = "0.6.5"
+  def publishVersion = VcsVersion.vcsState().format()
 
   def pomSettings = PomSettings(
     description = artifactName(),
@@ -48,7 +53,7 @@ trait CommonTestModule extends ScalaModule with TestModule {
 
 
 object geny extends Module {
-  object jvm extends Cross[JvmGenyModule]((scala212 :: scala213 :: scala3 :: dottyCustomVersion.toList): _*)
+  object jvm extends Cross[JvmGenyModule](scalaVersions: _*)
   class JvmGenyModule(val crossScalaVersion: String)
     extends Common with ScalaModule with GenyPublishModule
   {
