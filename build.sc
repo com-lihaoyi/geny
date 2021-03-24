@@ -4,11 +4,12 @@ import de.tobiasroeser.mill.vcs.version.VcsVersion
 
 val dottyCustomVersion = sys.props.get("dottyVersion")
 
+val scala211 = "2.11.12"
 val scala212 = "2.12.13"
 val scala213 = "2.13.4"
 val scala3 = "3.0.0-RC1"
 
-val scalaVersions = scala213 :: scala212 :: scala3 :: dottyCustomVersion.toList
+val scalaVersions = scala213 :: scala212 :: scala211 :: scala3 :: dottyCustomVersion.toList
 val scala2Versions = scalaVersions.filter(_.startsWith("2."))
 
 val scalaJSVersions = for {
