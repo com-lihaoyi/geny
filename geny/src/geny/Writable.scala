@@ -33,7 +33,7 @@ object Writable extends LowPriWritable {
 
       s.grouped(8192).foreach(ss => out.write(ss.getBytes(StandardCharsets.UTF_8)))
     }
-    override def httpContentType = Some("text/plain")
+    override def httpContentType = Some("text/plain; charset=utf-8")
     override def contentLength = Some(Internal.encodedLength(s))
   }
 
@@ -97,7 +97,7 @@ object Readable{
     def readBytesThrough[T](f: InputStream => T): T = {
       f(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)))
     }
-    override def httpContentType = Some("text/plain")
+    override def httpContentType = Some("text/plain; charset=utf-8")
     override def contentLength = Some(Internal.encodedLength(s))
   }
 
