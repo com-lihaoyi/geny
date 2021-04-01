@@ -7,7 +7,7 @@ val dottyCustomVersion = sys.props.get("dottyVersion")
 val scala211 = "2.11.12"
 val scala212 = "2.12.13"
 val scala213 = "2.13.4"
-val scala3 = "3.0.0-RC1"
+val scala3 = "3.0.0-RC2"
 
 val scalaVersions = scala213 :: scala212 :: scala211 :: scala3 :: dottyCustomVersion.toList
 val scala2Versions = scalaVersions.filter(_.startsWith("2."))
@@ -49,7 +49,7 @@ trait Common extends CrossScalaModule {
 }
 
 trait CommonTestModule extends ScalaModule with TestModule {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.7")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.8")
   def testFrameworks = Seq("utest.runner.Framework")
 }
 

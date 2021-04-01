@@ -266,7 +266,7 @@ Serialize Scala data types directly to disk:
 @ os.read(os.pwd / "two.json")
 res5: String = "[[[1,2],[3,4]],[[5,6],[7,8]]]"
 ```
- 
+
 Or streaming file uploads over HTTP:
 
 ```scala
@@ -311,7 +311,7 @@ And implemented by the following libraries:
 
 And is accepted by the following libraries:
 
-- [Requests-Scala](https://github.com/lihaoyi/requests-scala) takes `Writable` in the 
+- [Requests-Scala](https://github.com/lihaoyi/requests-scala) takes `Writable` in the
   `data =` field of `requests.post` and `requests.put`
 
 - [OS-Lib](https://github.com/lihaoyi/os-lib) accepts a `Writable` in `os.write` and
@@ -396,6 +396,11 @@ particular usage pattern.
 
 Changelog
 =========
+
+0.6.8
+-----
+
+- Add support for Scala 3.0.0-RC2
 
 0.6.4
 -----
