@@ -7,14 +7,14 @@ val dottyCustomVersion = sys.props.get("dottyVersion")
 val scala211 = "2.11.12"
 val scala212 = "2.12.13"
 val scala213 = "2.13.4"
-val scala3 = "3.0.0-RC3"
+val scala3 = "3.0.0"
 
 val scalaVersions = scala213 :: scala212 :: scala211 :: scala3 :: dottyCustomVersion.toList
 val scala2Versions = scalaVersions.filter(_.startsWith("2."))
 
 val scalaJSVersions = for {
   scalaV <- scalaVersions
-  scalaJSV <- Seq("0.6.33", "1.4.0")
+  scalaJSV <- Seq("0.6.33", "1.5.1")
   if scalaV.startsWith("2.") || scalaJSV.startsWith("1.")
 } yield (scalaV, scalaJSV)
 
@@ -48,11 +48,9 @@ trait Common extends CrossScalaModule {
   def sources = T.sources(millSourcePath / "src")
 }
 
-trait CommonTestModule extends ScalaModule with TestModule {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.9")
-  def testFrameworks = Seq("utest.runner.Framework")
+trait CommonTestModule extends ScalaModule with TestModule.Utest {
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.10")
 }
-
 
 object geny extends Module {
   object jvm extends Cross[JvmGenyModule](scalaVersions: _*)
