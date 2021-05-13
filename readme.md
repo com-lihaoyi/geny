@@ -1,9 +1,9 @@
-Geny 0.6.5
+Geny 0.6.10
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.6.5"
-"com.lihaoyi" %%% "geny" % "0.6.5" // Scala.js / native
+"com.lihaoyi" %% "geny" % "0.6.10"
+"com.lihaoyi" %%% "geny" % "0.6.10" // Scala.js / Native
 ```
 
 Geny is a small library that provides push-based versions of common standard
@@ -396,6 +396,16 @@ particular usage pattern.
 
 Changelog
 =========
+
+0.6.10
+-----
+
+- Add support for Scala 3.0.0
+
+0.6.9
+-----
+
+- Add support for Scala 3.0.0-RC3
 
 0.6.8
 -----
