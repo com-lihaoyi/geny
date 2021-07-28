@@ -1,6 +1,8 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version_mill0.9:0.1.1`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
+import $ivy.`com.github.lolgab::mill-mima_mill0.9:0.0.4`
+import com.github.lolgab.mill.mima._
 
 val dottyCustomVersion = sys.props.get("dottyVersion")
 
@@ -23,10 +25,12 @@ val scalaNativeVersions = for {
   scalaNativeV <- Seq("0.4.0")
 } yield (scalaV, scalaNativeV)
 
-trait GenyPublishModule extends PublishModule {
+trait GenyPublishModule extends PublishModule with Mima {
   def artifactName = "geny"
 
   def publishVersion = VcsVersion.vcsState().format()
+
+  def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
 
   def pomSettings = PomSettings(
     description = artifactName(),
