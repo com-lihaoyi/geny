@@ -134,5 +134,6 @@ object Readable{
 
   implicit class InputStreamReadable(i: InputStream) extends Readable{
     def readBytesThrough[T](f: InputStream => T): T = f(i)
+    override def httpContentType = Some("application/octet-stream")
   }
 }
