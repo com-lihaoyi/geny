@@ -1,9 +1,14 @@
-Geny 0.6.10
+Geny 0.7.0
 ==========
 
 ```scala
-"com.lihaoyi" %% "geny" % "0.6.10"
-"com.lihaoyi" %%% "geny" % "0.6.10" // Scala.js / Native
+// SBT
+"com.lihaoyi" %% "geny" % "0.7.0"
+"com.lihaoyi" %%% "geny" % "0.7.0" // Scala.js / Native
+
+// Mill
+ivy"com.lihaoyi::geny:0.7.0"
+ivy"com.lihaoyi::geny::0.7.0" // Scala.js / Native
 ```
 
 Geny is a small library that provides push-based versions of common standard
@@ -396,6 +401,11 @@ particular usage pattern.
 
 Changelog
 =========
+
+0.7.0
+-----
+
+- Add `httpContentType` to `inputStreamReadable`
 
 0.6.10
 -----
