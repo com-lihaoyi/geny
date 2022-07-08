@@ -1,41 +1,42 @@
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
 import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
-import $ivy.`com.github.lolgab::mill-mima::0.0.9`
+import $ivy.`com.github.lolgab::mill-mima::0.0.10`
 import com.github.lolgab.mill.mima._
+import mill.scalalib.api.Util.isScala3
 
-val dottyCustomVersion = sys.props.get("dottyVersion")
+val communityBuildDottyVersion = sys.props.get("dottyVersion").toList
 
 val scala211 = "2.11.12"
-val scala212 = "2.12.13"
-val scala213 = "2.13.4"
-val scala30 = "3.0.0"
-val scala31 = "3.1.1"
+val scala212 = "2.12.16"
+val scala213 = "2.13.8"
+val scala3 = "3.1.3"
 
-val scala2VersionsAndDotty = scala213 :: scala212 :: scala211 :: dottyCustomVersion.toList
+val scalaVersions = scala3 :: scala213 :: scala212 :: scala211 :: communityBuildDottyVersion
 
-val scalaJSVersions = for {
-  scalaV <- scala30 :: scala2VersionsAndDotty
-  scalaJSV <- Seq("0.6.33", "1.5.1")
-  if scalaV.startsWith("2.") || scalaJSV.startsWith("1.")
-} yield (scalaV, scalaJSV)
+val scalaJSVersions = scalaVersions.map((_, "1.10.1"))
+val scalaNativeVersions = scalaVersions.map((_, "0.4.5"))
 
-val scalaNativeVersions = for {
-  scalaV <- scala31 :: scala2VersionsAndDotty
-  scalaNativeV <- Seq("0.4.3")
-} yield (scalaV, scalaNativeV)
+trait MimaCheck extends Mima {
+  def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
+}
 
-trait GenyPublishModule extends PublishModule with Mima {
+trait GenyPublishModule extends PublishModule with MimaCheck {
   def artifactName = "geny"
 
   def publishVersion = VcsVersion.vcsState().format()
 
-  def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
+  def crossScalaVersion: String
+
+  // Temporary until the next version of Mima gets released with
+  // https://github.com/lightbend/mima/issues/693 included in the release.
+  def mimaPreviousArtifacts =
+    if(isScala3(crossScalaVersion)) Agg.empty[Dep] else super.mimaPreviousArtifacts()
 
   def pomSettings = PomSettings(
     description = artifactName(),
     organization = "com.lihaoyi",
-    url = "https://github.com/lihaoyi/geny",
+    url = "https://github.com/com-lihaoyi/geny",
     licenses = Seq(License.MIT),
     versionControl = VersionControl.github(owner = "com-lihaoyi", repo = "geny"),
     developers = Seq(
@@ -50,11 +51,11 @@ trait Common extends CrossScalaModule {
 }
 
 trait CommonTestModule extends ScalaModule with TestModule.Utest {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.7.11")
+  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.0")
 }
 
 object geny extends Module {
-  object jvm extends Cross[JvmGenyModule](scala30 :: scala2VersionsAndDotty: _*)
+  object jvm extends Cross[JvmGenyModule](scalaVersions: _*)
   class JvmGenyModule(val crossScalaVersion: String)
     extends Common with ScalaModule with GenyPublishModule
   {
