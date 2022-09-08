@@ -1,37 +1,42 @@
+// plugins
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.2.0`
+import $ivy.`com.github.lolgab::mill-mima::0.0.12`
+
+// imports
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.1.4`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
-import $ivy.`com.github.lolgab::mill-mima::0.0.10`
 import com.github.lolgab.mill.mima._
-import mill.scalalib.api.Util.isScala3
+import mill.scalalib.api.ZincWorkerUtil
 
 val communityBuildDottyVersion = sys.props.get("dottyVersion").toList
 
-val scala211 = "2.11.12"
-val scala212 = "2.12.16"
-val scala213 = "2.13.8"
-val scala3 = "3.1.3"
-
-val scalaVersions = scala3 :: scala213 :: scala212 :: scala211 :: communityBuildDottyVersion
+val scalaVersions = Seq(
+  "3.1.3",
+  "2.13.8",
+  "2.12.16",
+  "2.11.12"
+) ++ communityBuildDottyVersion
 
 val scalaJSVersions = scalaVersions.map((_, "1.10.1"))
 val scalaNativeVersions = scalaVersions.map((_, "0.4.5"))
 
+
 trait MimaCheck extends Mima {
-  def mimaPreviousVersions = VcsVersion.vcsState().lastTag.toSeq
+  override def mimaPreviousVersions = Seq("0.7.0", "0.7.1")
+
+ // Temporary until the next version of Mima gets released with
+  // https://github.com/lightbend/mima/issues/693 included in the release.
+  override def mimaPreviousArtifacts = T{
+    if (ZincWorkerUtil.isScala3(scalaVersion())) Agg.empty[Dep]
+    else super.mimaPreviousArtifacts()
+  }
 }
 
+
 trait GenyPublishModule extends PublishModule with MimaCheck {
-  def artifactName = "geny"
+  override def artifactName = "geny"
 
   def publishVersion = VcsVersion.vcsState().format()
-
-  def crossScalaVersion: String
-
-  // Temporary until the next version of Mima gets released with
-  // https://github.com/lightbend/mima/issues/693 included in the release.
-  def mimaPreviousArtifacts =
-    if(isScala3(crossScalaVersion)) Agg.empty[Dep] else super.mimaPreviousArtifacts()
 
   def pomSettings = PomSettings(
     description = artifactName(),
@@ -51,7 +56,7 @@ trait Common extends CrossScalaModule {
 }
 
 trait CommonTestModule extends ScalaModule with TestModule.Utest {
-  def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.1")
+  override def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.1")
 }
 
 object geny extends Module {
