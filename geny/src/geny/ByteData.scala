@@ -12,12 +12,6 @@ trait ByteData {
 
   def bytes: Array[Byte]
 
-  @deprecated("Use .text()")
-  def string(): String = text(StandardCharsets.UTF_8)
-
-  @deprecated("Use .text()")
-  def string(codec: Codec): String = new String(bytes, codec.charSet)
-
   def text(): String = text(StandardCharsets.UTF_8)
   def text(codec: Codec): String = new String(bytes, codec.charSet)
 
