@@ -36,9 +36,11 @@ trait MimaCheck extends Mima {
 trait GenyPublishModule extends PublishModule with MimaCheck {
   override def artifactName = "geny"
 
-  def publishVersion = VcsVersion.vcsState().format()
+  override def publishVersion: T[String] = VcsVersion.vcsState().format()
 
-  def pomSettings = PomSettings(
+  override def versionScheme: T[Option[VersionScheme]] = Some(VersionScheme.EarlySemVer)
+
+  override def pomSettings: T[PomSettings] = PomSettings(
     description = artifactName(),
     organization = "com.lihaoyi",
     url = "https://github.com/com-lihaoyi/geny",
