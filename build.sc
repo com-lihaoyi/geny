@@ -32,7 +32,7 @@ trait MimaCheck extends Mima {
   }
 
   override def mimaBinaryIssueFilters: T[Seq[ProblemFilter]] = Seq(
-    // deprecated since it's inception in 0.3.0
+    // deprecated since its inception in 0.3.0
     ProblemFilter.exclude[DirectMissingMethodProblem]("geny.ByteData.string"),
     ProblemFilter.exclude[DirectMissingMethodProblem]("geny.ByteData#Chunks.string")
   )
