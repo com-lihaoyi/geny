@@ -30,6 +30,12 @@ trait MimaCheck extends Mima {
     if (ZincWorkerUtil.isScala3(scalaVersion())) Agg.empty[Dep]
     else super.mimaPreviousArtifacts()
   }
+
+  override def mimaBinaryIssueFilters: T[Seq[ProblemFilter]] = Seq(
+    // deprecated since its inception in 0.3.0
+    ProblemFilter.exclude[DirectMissingMethodProblem]("geny.ByteData.string"),
+    ProblemFilter.exclude[DirectMissingMethodProblem]("geny.ByteData#Chunks.string")
+  )
 }
 
 
