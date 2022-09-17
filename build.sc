@@ -22,7 +22,7 @@ val scalaNativeVersions = scalaVersions.map((_, "0.4.5"))
 
 
 trait MimaCheck extends Mima {
-  override def mimaPreviousVersions = Seq("0.6.7", "0.6.8", "0.6.9", "0.6.10", "0.7.0", "0.7.1")
+  override def mimaPreviousVersions = Seq("0.6.7", "0.6.8", "0.6.9", "0.6.10", "0.7.0", "0.7.1", "1.0.0")
 
  // Temporary until the next version of Mima gets released with
   // https://github.com/lightbend/mima/issues/693 included in the release.
