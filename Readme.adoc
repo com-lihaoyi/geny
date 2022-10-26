@@ -419,84 +419,92 @@ penalty over parsing data already in memory, due to the additional book-keeping
 necessary with streaming data. Whether it is worthwhile or not depends on your
 particular usage pattern.
 
-= Changelog
 
-== 1.0.0
+
+== Changelog
+
+=== 1.0.0 - 2022-09-15
 
 * Support Semantic Versioning
 * Removed deprecated API
 
-== 0.7.1
+=== 0.7.1 - 2022-01-23
 
 * Support Scala Native for Scala 3
 
-== 0.7.0
+=== 0.7.0 - 2021-12-10
+
+_Re-release of 0.6.11_
+
+=== 0.6.11 - 2021-11-26
 
 * Add `httpContentType` to `inputStreamReadable`
+* Improved Build and CI setup
+* Added MiMa checks
 
-== 0.6.10
+=== 0.6.10 - 2021-05-14
 
 * Add support for Scala 3.0.0
 
-== 0.6.9
+=== 0.6.9 - 2021-04-28
 
 * Add support for Scala 3.0.0-RC3
 
-== 0.6.8
+=== 0.6.8 - 2021-04-28
 
 * Add support for Scala 3.0.0-RC2
 
-== 0.6.4
+=== 0.6.4
 
 * Scala-Native 0.4.0 support
 
-== 0.6.2
+=== 0.6.2
 
 * Improve performance of writing small strings via `StringWritable`
 
-== 0.5.0
+=== 0.5.0
 
 * Improve streaming of ``InputStream``s to ``OutputStream``s by dynamically sizing
 the transfer buffer.
 
-== 0.4.2
+=== 0.4.2
 
 * Standardize `geny.Readable` as well
 
-== 0.2.0
+=== 0.2.0
 
 * Added <<writable,geny.Writable>> interface
 
-== 0.1.8
+=== 0.1.8
 
 * Support for Scala 2.13.0 final
 
-== 0.1.6
+=== 0.1.6 - 2019-01-15
 
 * Add scala-native support
 
-== 0.1.5
+=== 0.1.5
 
 * Add `.withFilter`
 
-== 0.1.4
+=== 0.1.4
 
 * Add `.collect`, `.collectFirst`, `.headOption`  methods
 
-== 0.1.3
+=== 0.1.3
 
 * Allow calling `.count()` without a predicate to count the total number of items
 in the generator
 
-== 0.1.2
+=== 0.1.2
 
 * Add `.reduce`, `.fold`, `.sum`, `.product`, `.min`, `.max`, `.minBy`, `.maxBy`
 * Rename `.fromIterable` to `.from`, make it also take ``Iterator``s
 
-== 0.1.1
+=== 0.1.1
 
 * Publish for Scala 2.12.0
 
-== 0.1.0
+=== 0.1.0
 
 * First release
