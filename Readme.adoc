@@ -9,6 +9,7 @@
 :link-scalatags: https://github.com/com-lihaoyi/scalatags
 :link-requests: https://github.com/lihaoyi/requests-scala
 :link-cask: https://github.com/com-lihaoyi/cask
+:link-fastparse: https://github.com/com-lihaoyi/fastparse
 :idprefix:
 :idseparator: -
 :example-scalatags-version: 0.8.0
@@ -386,10 +387,10 @@ to allow streaming of request data
 
 And is accepted by the following libraries:
 
-* https://github.com/lihaoyi/upickle[uPickle]: `upickle.default.read`,
+* {link-upickle}[uPickle]: `upickle.default.read`,
 `upickle.default.readBinary`, `ujson.read`, and `upack.read` all support
 `Readable`
-* https://github.com/lihaoyi/os-lib[FastParse]: `fastparse.parse` accepts
+* {link-fastparse}[FastParse]: `fastparse.parse` accepts
 parsing streaming input from any `Readable`
 
 `Readable` can be used to allow handling of streaming input, e.g. parsing JSON
