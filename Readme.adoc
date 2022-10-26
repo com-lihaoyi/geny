@@ -27,9 +27,9 @@ ivy"com.lihaoyi::geny::{version}" // Scala.js / Native
 Geny is a small library that provides push-based versions of common standard
 library interfaces:
 
-* <<generator,geny.Generator[T]>>, a push-based version of `scala.Iterator[T]`
-* <<writable,geny.Writable>>, a push-based version of `java.io.InputStream`
- ** <<readable,geny.Readable>>, a pull-based subclass of `Writable`
+* <<generator,`geny.Generator[T]`>>, a push-based version of `scala.Iterator[T]`
+* <<writable,`geny.Writable`>>, a push-based version of `java.io.InputStream`
+* <<readable,`geny.Readable`>>, a pull-based subclass of `Writable`
 
 More background behind the `Writable` and `Readable` interface can be found in
 this blog post:
@@ -329,26 +329,26 @@ And implemented by the following libraries:
 `upickle.default.stream` or `upickle.default.writableBinary`
 * {link-scalatags}[Scalatags]: implemented by `scalatags.Text.Tag`
 * {link-requests}[Requests-Scala]:
-`+requests.get.stream(...)+` methods return a <<readable,Readable>> subtype of
-`Writable`
+`+requests.get.stream(...)+` methods return a <<readable>> subtype of
+<<writable>>
 * https://github.com/lihaoyi/os-lib[OS-Lib]: `os.read.stream` returns a
-<<readable,Readable>> subtype of `Writable`
+<<readable>> subtype of <<writable>>
 * https://github.com/lihaoyi/cask[Cask]: `cask.Request` returns a
-<<readable,Readable>> subtype of `Writable`
+<<readable>> subtype of <<writable>>
 
 And is accepted by the following libraries:
 
-* {link-requests}[Requests-Scala] takes `Writable` in the
+* {link-requests}[Requests-Scala] takes <<writable>> in the
 `data =` field of `requests.post` and `requests.put`
-* {link-oslib}[OS-Lib] accepts a `Writable` in `os.write` and
+* {link-oslib}[OS-Lib] accepts a <<writable>> in `os.write` and
 the `stdin` parameter of `subprocess.call` or `subprocess.spawn`
-* {link-cask}[Cask]: supports returning a `Writable`
+* {link-cask}[Cask]: supports returning a <<writable>>
 from any Cask endpoint
 
 Any data type that writes bytes out to a `java.io.OutputStream`,
 `java.io.Writer`, or `StringBuilder` can be trivially made to implement
-`Writable`, which allows it to output data in a streaming fashion without
-needing to buffer it in memory. You can also implement ``Writable``s in your own
+<<writable>>, which allows it to output data in a streaming fashion without
+needing to buffer it in memory. You can also implement <<writable>>s in your own
 datatypes or accept it in your own method, if you want to inter-operate with
 this existing ecosystem of libraries.
 
@@ -362,7 +362,7 @@ trait Readable extends Writable {
 }
 ----
 
-`Readable` is a subtype of <<writable,Writable>> that provides an additional
+`Readable` is a subtype of <<writable>> that provides an additional
 guarantee: not only can it be written to an `java.io.OutputStream`, it can also
 be read from by providing a `java.io.InputStream`. Note that the `InputStream`
 is scoped and only available within the `readBytesThrough` callback: after that
@@ -377,11 +377,11 @@ file handles, etc.) will be released.
 
 Implemented by the following libraries
 
-* https://github.com/lihaoyi/requests-scala[Requests-Scala]:
-`+requests.get.stream(...)+` methods return a `Readable`
-* https://github.com/lihaoyi/os-lib[OS-Lib]: `os.read.stream` returns a
-`Readable`
-* https://github.com/lihaoyi/cask[Cask]: `cask.Request` implements `Readable`
+* {link-requests}[Requests-Scala]:
+`+requests.get.stream(...)+` methods return a <<readable>>
+* {link-oslib}[OS-Lib]: `os.read.stream` returns a
+<<readable>>
+* {link-cask}[Cask]: `cask.Request` implements <<readable>>
 to allow streaming of request data
 
 And is accepted by the following libraries:
