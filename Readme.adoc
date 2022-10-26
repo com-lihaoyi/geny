@@ -1,7 +1,6 @@
 = Geny
 :version: 1.0.0
 :toc-placement: preamble
-:toclevels: 3
 :toc:
 :link-geny: https://github.com/com-lihaoyi/geny
 :link-oslib: https://github.com/com-lihaoyi/os-lib
