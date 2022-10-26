@@ -83,7 +83,7 @@ file-handles, database connections, etc.) you can use the
 
 [source,scala]
 ----
-scala> class DummyCloseableSource{
+scala> class DummyCloseableSource {
      |   val iterator = Iterator(1, 2, 3, 4, 5, 6, 7, 8, 9)
      |   var closed = false
      |   def close() = {
@@ -92,7 +92,7 @@ scala> class DummyCloseableSource{
      | }
 defined class DummyCloseableSource
 
-scala> val g = Generator.selfClosing{
+scala> val g = Generator.selfClosing {
      |   val closeable = new DummyCloseableSource()
      |   (closeable.iterator, () => closeable.close())
      | }
@@ -154,7 +154,7 @@ result, and only build up a computation:
 scala> Generator(0, 1, 2).map(_ + 1)
 res9: geny.Generator[Int] = Generator(WrappedArray(0, 1, 2)).map(<function1>)
 
-scala> Generator(0, 1, 2).map{x => println(x); x + 1}
+scala> Generator(0, 1, 2).map { x => println(x); x + 1 }
 res10: geny.Generator[Int] = Generator(WrappedArray(0, 1, 2)).map(<function1>)
 ----
 
@@ -234,7 +234,7 @@ Using ``geny.Generator``s, the helper function can instead return a
 
 [source,scala]
 ----
-def getFileLines(path: String): geny.Generator[String] = Generator.selfClosing{
+def getFileLines(path: String): geny.Generator[String] = Generator.selfClosing {
   val s = scala.io.Source.fromFile(path)(charSet)
   (s.getLines(), () => s.close())
 }
@@ -352,11 +352,11 @@ needing to buffer it in memory. You can also implement ``Writable``s in your own
 datatypes or accept it in your own method, if you want to inter-operate with
 this existing ecosystem of libraries.
 
-=== `Readable`
+== `Readable`
 
 [source,scala]
 ----
-trait Readable extends Writable{
+trait Readable extends Writable {
   def readBytesThrough[T](f: InputStream => T): T
   def writeBytesTo(out: OutputStream): Unit = readBytesThrough(Internal.transfer(_, out))
 }
