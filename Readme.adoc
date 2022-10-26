@@ -11,7 +11,7 @@
 :link-fastparse: https://github.com/com-lihaoyi/fastparse
 :idprefix:
 :idseparator: -
-:example-scalatags-version: 0.8.0
+:example-scalatags-version: 0.12.0
 
 [source,scala,subs="attributes,verbatim"]
 ----
