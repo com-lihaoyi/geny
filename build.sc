@@ -1,6 +1,6 @@
 // plugins
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.2.0`
-import $ivy.`com.github.lolgab::mill-mima::0.0.12`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.0`
+import $ivy.`com.github.lolgab::mill-mima::0.0.13`
 
 // imports
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
@@ -22,13 +22,18 @@ val scalaNativeVersions = scalaVersions.map((_, "0.4.5"))
 
 
 trait MimaCheck extends Mima {
-  override def mimaPreviousVersions = Seq("0.6.7", "0.6.8", "0.6.9", "0.6.10", "0.7.0", "0.7.1", "1.0.0")
-
- // Temporary until the next version of Mima gets released with
-  // https://github.com/lightbend/mima/issues/693 included in the release.
-  override def mimaPreviousArtifacts = T{
-    if (ZincWorkerUtil.isScala3(scalaVersion())) Agg.empty[Dep]
-    else super.mimaPreviousArtifacts()
+  override def mimaPreviousVersions = T{
+    val sv = scalaVersion()
+    val is3 = ZincWorkerUtil.isScala3(sv)
+    val is211 = sv.startsWith("2.11.")
+    val isNative = this.isInstanceOf[ScalaNativeModule]
+    Seq(
+      Seq("0.6.0", "0.6.2").filter(_ => !is3 && !is211 && !isNative),
+      Seq("0.6.4", "0.6.5", "0.6.6").filter(_ => !is3 && !is211),
+      Seq("0.6.7", "0.6.8", "0.6.9").filter(_ => !is3),
+      Seq("0.6.10", "0.7.0").filter(_ => !is3 || !isNative),
+      Seq("0.7.1", "1.0.0")
+    ).flatten
   }
 
   override def mimaBinaryIssueFilters: T[Seq[ProblemFilter]] = Seq(
