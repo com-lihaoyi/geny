@@ -85,6 +85,16 @@ object geny extends Module {
     extends Common with ScalaJSModule with GenyPublishModule
   {
     def scalaJSVersion = crossJSVersion
+    private def sourceMapOptions = T.task {
+    val vcsState = VcsVersion.vcsState()
+    vcsState.lastTag.collect {
+      case tag if vcsState.commitsSinceLastTag == 0 =>
+        val baseUrl = pomSettings().url.replace("github.com", "raw.githubusercontent.com")
+        val sourcesOptionName = if(isScala3(crossJSVersion)) "-scalajs-mapSourceURI" else "-P:scalajs:mapSourceURI"
+        s"$sourcesOptionName:${T.workspace.toIO.toURI}->$baseUrl/$tag/"
+      }
+    }
+    override def scalacOptions = super.scalacOptions() ++ sourceMapOptions()
     object test extends Tests with CommonTestModule
   }
 
