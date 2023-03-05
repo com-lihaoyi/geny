@@ -62,6 +62,10 @@ object TestGenerator extends TestSuite{
         assert(Generator.from[IndexedSeq, Int](0 until 10).foldLeft(0)(_ + _) == 45)
         assert(Generator.from[IndexedSeq, Int](0 until 0).foldLeft(0)(_ + _) == 0)
       }
+      test("scanLeft"){
+        assert(Generator(1,2,3,4).scanLeft(100)(_ + _).toList == List(101,103,106,110))
+        assert(Generator[Int]().scanLeft(100)(_ + _).toList == List())
+      }
 
 
       test("concat"){

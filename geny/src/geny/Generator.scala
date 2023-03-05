@@ -83,6 +83,7 @@ trait Generator[+A]{
     result
   }
 
+  def scanLeft[B](start: B)(f: (B,A) => B): Generator[B] = new Generator.Scanned(this,start,f)
 
   def reduce[B >: A](f: (B, A) => B): B = reduceLeft(f)
   def reduceLeft[B >: A](f: (B, A) => B): B = {
@@ -295,6 +296,16 @@ object Generator{
       }
     }
     override def toString = s"$inner.map($func)"
+  }
+
+  private class Scanned[+T, V](inner: Generator[V], initial: T, func: (T,V) => T) extends Generator[T]{
+    def generate(f: T => Generator.Action) = {
+      var acc = initial
+      inner.generate{ v =>
+        acc = func(acc,v)
+        f(acc)
+      }
+    }
   }
 
   private class Sliced[+T](inner: Generator[T], start: Int, end: Int) extends Generator[T]{
