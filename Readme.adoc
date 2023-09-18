@@ -13,6 +13,8 @@
 :idseparator: -
 :example-scalatags-version: 0.12.0
 
+image:https://javadoc.io/badge2/com.lihaoyi/geny_3/scaladoc.svg[API Docs (Scala 3),link=https://javadoc.io/doc/com.lihaoyi/geny_3/]
+
 [source,scala,subs="attributes,verbatim"]
 ----
 // Mill
