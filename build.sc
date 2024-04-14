@@ -36,6 +36,10 @@ trait MimaCheck extends Mima {
     ProblemFilter.exclude[DirectMissingMethodProblem]("geny.ByteData.string"),
     ProblemFilter.exclude[DirectMissingMethodProblem]("geny.ByteData#Chunks.string")
   )
+
+  def mimaReportBinaryIssues() =
+    if (this.isInstanceOf[ScalaNativeModule] || this.isInstanceOf[ScalaJSModule]) T.command()
+    else super.mimaReportBinaryIssues()
 }
 
 
