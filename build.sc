@@ -1,6 +1,6 @@
 // plugins
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.3.0`
-import $ivy.`com.github.lolgab::mill-mima::0.0.13`
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.0`
+import $ivy.`com.github.lolgab::mill-mima::0.0.23`
 
 // imports
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
@@ -11,15 +11,10 @@ import mill.scalalib.api.ZincWorkerUtil
 val communityBuildDottyVersion = sys.props.get("dottyVersion").toList
 
 val scalaVersions = Seq(
-  "3.1.3",
+  "3.3.1",
   "2.13.8",
   "2.12.17",
-  "2.11.12"
 ) ++ communityBuildDottyVersion
-
-val scalaJSVersions = scalaVersions.map((_, "1.10.1"))
-val scalaNativeVersions = scalaVersions.map((_, "0.4.5"))
-
 
 trait MimaCheck extends Mima {
   override def mimaPreviousVersions = T{
@@ -69,22 +64,18 @@ trait Common extends CrossScalaModule {
 }
 
 trait CommonTestModule extends ScalaModule with TestModule.Utest {
-  override def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.1")
+  override def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.3")
 }
 
 object geny extends Module {
-  object jvm extends Cross[JvmGenyModule](scalaVersions: _*)
-  class JvmGenyModule(val crossScalaVersion: String)
-    extends Common with ScalaModule with GenyPublishModule
-  {
-    object test extends Tests with CommonTestModule
+  object jvm extends Cross[JvmGenyModule](scalaVersions)
+  trait JvmGenyModule extends Common with ScalaModule with GenyPublishModule {
+    object test extends ScalaTests with CommonTestModule
   }
 
-  object js extends Cross[JSGenyModule](scalaJSVersions: _*)
-  class JSGenyModule(val crossScalaVersion: String, crossJSVersion: String)
-    extends Common with ScalaJSModule with GenyPublishModule
-  {
-    def scalaJSVersion = crossJSVersion
+  object js extends Cross[JSGenyModule](scalaVersions)
+  trait JSGenyModule extends Common with ScalaJSModule with GenyPublishModule {
+    def scalaJSVersion = "1.10.1"
     private def sourceMapOptions = T.task {
       val vcsState = VcsVersion.vcsState()
       vcsState.lastTag.collect {
@@ -96,14 +87,13 @@ object geny extends Module {
     }
     override def scalacOptions = super.scalacOptions() ++ sourceMapOptions()
 
-    object test extends Tests with CommonTestModule
+    object test extends ScalaJSTests with CommonTestModule
   }
 
-  object native extends Cross[NativeGenyModule](scalaNativeVersions: _*)
-  class NativeGenyModule(val crossScalaVersion: String, crossScalaNativeVersion: String)
-    extends Common with ScalaNativeModule with GenyPublishModule
+  object native extends Cross[NativeGenyModule](scalaVersions)
+  trait NativeGenyModule extends Common with ScalaNativeModule with GenyPublishModule
   {
-    def scalaNativeVersion = crossScalaNativeVersion
-    object test extends Tests with CommonTestModule
+    def scalaNativeVersion = "0.5.0"
+    object test extends ScalaNativeTests with CommonTestModule
   }
 }
