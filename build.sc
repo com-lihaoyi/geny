@@ -75,7 +75,7 @@ object geny extends Module {
 
   object js extends Cross[JSGenyModule](scalaVersions)
   trait JSGenyModule extends Common with ScalaJSModule with GenyPublishModule {
-    def scalaJSVersion = "1.10.1"
+    def scalaJSVersion = "1.12.0"
     private def sourceMapOptions = T.task {
       val vcsState = VcsVersion.vcsState()
       vcsState.lastTag.collect {
