@@ -133,6 +133,20 @@ object TestGenerator extends TestSuite{
         check(Generator.from[IndexedSeq, Int](0 until 10).drop(3), 3 until 10)
         check(Generator.from[IndexedSeq, Int](0 until 10).drop(-1), 0 until 10)
       }
+      test("sliding") {
+        check(Generator.from[IndexedSeq, Int](IndexedSeq.empty).grouped(2), Seq.empty)
+        check(Generator.from[IndexedSeq, Int](0 until 1).grouped(2), Seq(Seq(0)))
+        check(Generator.from[IndexedSeq, Int](0 until 10).grouped(1), (0 until 10).map(Seq.apply(_)))
+        check(Generator.from[IndexedSeq, Int](0 until 10).grouped(3), Seq(0 until 3, 3 until 6, 6 until 9, 9 until 10))
+        check(Generator.from[IndexedSeq, Int](0 until 10).grouped(5), Seq(0 until 5, 5 until 10))
+        check(Generator.from[IndexedSeq, Int](0 until 10).grouped(10), Seq(0 until 10))
+        check(Generator.from[IndexedSeq, Int](0 until 10).grouped(15), Seq(0 until 10))
+
+        check(Generator.from[IndexedSeq, Int](0 until 10).sliding(2, 3), Seq(0 until 2, 3 until 5, 6 until 8, 9 until 10))
+        check(Generator.from[IndexedSeq, Int](0 until 10).sliding(2, 15), Seq(0 until 2))
+        check(Generator.from[IndexedSeq, Int](0 until 10).sliding(3, 2), Seq(0 until 3, 2 until 5, 4 until 7, 6 until 9, 8 until 10))
+        check(Generator.from[IndexedSeq, Int](0 until 10).sliding(15, 2), Seq(0 until 10))
+      }
       test("takeWhile"){
         check(Generator.from[IndexedSeq, Int](0 until 10).takeWhile(_ < 5), 0 until 5)
       }
