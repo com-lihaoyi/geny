@@ -1,5 +1,5 @@
 = Geny
-:version: 1.1.0
+:version: 1.1.1
 :toc-placement: preamble
 :toc:
 :link-geny: https://github.com/com-lihaoyi/geny
@@ -421,6 +421,10 @@ particular usage pattern.
 
 
 == Changelog
+
+=== 1.1.1 - 2024-06-14
+
+* Implement `.grouped` and `.sliding` operators
 
 === 1.1.0 - 2024-04-14
 
