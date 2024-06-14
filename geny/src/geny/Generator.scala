@@ -111,6 +111,11 @@ trait Generator[+A]{
 
   def flatten[V](implicit f: A => Generator[V]) = this.flatMap[V]((x: A) => f(x))
   def slice(start: Int, end: Int): Generator[A] = new Generator.Sliced(this, start, end)
+  def grouped(size: Int): Generator[Iterable[A]] = sliding(size, step = size)
+  def sliding(size: Int, step: Int): Generator[Iterable[A]] = {
+    require(size >= 1 && step >= 1, f"size=$size%d and step=$step%d, but both must be positive")
+    new Generator.Sliding(this, size, step)
+  }
   def take(n: Int) = slice(0, n)
   def drop(n: Int) = slice(n, Int.MaxValue)
   def takeWhile(pred: A => Boolean): Generator[A] = new Generator.TakeWhile(this, pred)
@@ -295,6 +300,38 @@ object Generator{
       }
     }
     override def toString = s"$inner.map($func)"
+  }
+
+  private class Sliding[+T](inner: Generator[T], size: Int, step: Int) extends Generator[Iterable[T]] {
+    def generate(f: Iterable[T] => Generator.Action) = {
+      val builder = Iterable.newBuilder[T]
+      val capacity = Math.max(size, step)
+      var n = 0
+      builder.sizeHint(capacity)
+      var action: Generator.Action = Generator.Continue
+      inner.generate {
+        t =>
+          if (n < capacity) {
+            builder += t
+            n += 1
+            action
+          }
+          else {
+            action = f(builder.result.take(size))
+            val remainder = builder.result.drop(step)
+            builder.clear
+            builder.sizeHint(capacity)
+            builder ++= remainder
+            builder += t
+            n = remainder.size + 1
+            action
+          }
+      }
+      if (n > 0 && action == Generator.Continue) {
+        f(builder.result.take(size))
+      }
+      else action
+    }
   }
 
   private class Sliced[+T](inner: Generator[T], start: Int, end: Int) extends Generator[T]{
