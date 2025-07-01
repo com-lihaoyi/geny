@@ -69,7 +69,7 @@ trait Common extends CrossScalaModule {
 }
 
 trait CommonTestModule extends ScalaModule with TestModule.Utest {
-  override def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.3")
+  override def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.8")
 }
 
 object geny extends Module {
