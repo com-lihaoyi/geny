@@ -1,13 +1,13 @@
+//| mill-version: 1.0.0
+//| mvnDeps:
+//| - com.github.lolgab::mill-mima_mill1:0.2.0
 package build
-// plugins
-import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.0`
-import $ivy.`com.github.lolgab::mill-mima::0.0.23`
 
 // imports
 import mill._, scalalib._, scalajslib._, scalanativelib._, publish._
-import de.tobiasroeser.mill.vcs.version.VcsVersion
+import mill.util.VcsVersion
 import com.github.lolgab.mill.mima._
-import mill.scalalib.api.ZincWorkerUtil
+import mill.javalib.api.JvmWorkerUtil
 
 val communityBuildDottyVersion = sys.props.get("dottyVersion").toList
 
@@ -17,10 +17,10 @@ val scalaVersions = Seq(
   "2.12.17",
 ) ++ communityBuildDottyVersion
 
-trait MimaCheck extends Mima {
-  override def mimaPreviousVersions = T{
+trait MimaCheck extends ScalaModule with Mima {
+  override def mimaPreviousVersions = Task {
     val sv = scalaVersion()
-    val is3 = ZincWorkerUtil.isScala3(sv)
+    val is3 = JvmWorkerUtil.isScala3(sv)
     val is211 = sv.startsWith("2.11.")
     val isNative = this.isInstanceOf[ScalaNativeModule]
     Seq(
@@ -39,7 +39,7 @@ trait MimaCheck extends Mima {
   )
 
   def mimaReportBinaryIssues() =
-    if (this.isInstanceOf[ScalaNativeModule] || this.isInstanceOf[ScalaJSModule]) T.command()
+    if (this.isInstanceOf[ScalaNativeModule] || this.isInstanceOf[ScalaJSModule]) Task.Command{}
     else super.mimaReportBinaryIssues()
 }
 
@@ -64,12 +64,12 @@ trait GenyPublishModule extends PublishModule with MimaCheck {
 }
 
 trait Common extends CrossScalaModule {
-  def millSourcePath = build.millSourcePath / "geny"
-  def sources = T.sources(millSourcePath / "src")
+  def moduleDir = build.moduleDir / "geny"
+  def sources = Task.Sources("src")
 }
 
 trait CommonTestModule extends ScalaModule with TestModule.Utest {
-  override def ivyDeps = Agg(ivy"com.lihaoyi::utest::0.8.3")
+  override def mvnDeps = Seq(mvn"com.lihaoyi::utest::0.8.3")
 }
 
 object geny extends Module {
@@ -81,13 +81,13 @@ object geny extends Module {
   object js extends Cross[JSGenyModule](scalaVersions)
   trait JSGenyModule extends Common with ScalaJSModule with GenyPublishModule {
     def scalaJSVersion = "1.12.0"
-    private def sourceMapOptions = T.task {
+    private def sourceMapOptions = Task.Anon {
       val vcsState = VcsVersion.vcsState()
       vcsState.lastTag.collect {
         case tag if vcsState.commitsSinceLastTag == 0 =>
           val baseUrl = pomSettings().url.replace("github.com", "raw.githubusercontent.com")
-          val sourcesOptionName = if(ZincWorkerUtil.isScala3(crossScalaVersion)) "-scalajs-mapSourceURI" else "-P:scalajs:mapSourceURI"
-          s"$sourcesOptionName:${T.workspace.toIO.toURI}->$baseUrl/$tag/"
+          val sourcesOptionName = if(JvmWorkerUtil.isScala3(crossScalaVersion)) "-scalajs-mapSourceURI" else "-P:scalajs:mapSourceURI"
+          s"$sourcesOptionName:${mill.api.BuildCtx.workspaceRoot.toIO.toURI}->$baseUrl/$tag/"
       }
     }
     override def scalacOptions = super.scalacOptions() ++ sourceMapOptions()
