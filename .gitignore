@@ -8,3 +8,10 @@
 .sbtserver
 project/.sbtserver
 tags
+
+# sbt and Scala CLI build output
+target/
+project/target/
+project/project/
+.bsp/
+.scala-build/
